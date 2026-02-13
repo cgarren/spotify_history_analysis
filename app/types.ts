@@ -116,6 +116,154 @@ export interface NewArtistDiscovery {
   newArtists: number;
 }
 
+// ---------------------------------------------------------------------------
+// Spotify Account Data types
+// ---------------------------------------------------------------------------
+
+// Section 1: Playlist Insights
+export interface PlaylistGrowth {
+  month: string;
+  tracks: number;
+}
+
+export interface PlaylistBySize {
+  name: string;
+  tracks: number;
+}
+
+export interface PlaylistDiversity {
+  name: string;
+  diversity: number;
+  uniqueArtists: number;
+  totalTracks: number;
+}
+
+export interface PlaylistInsights {
+  totalPlaylists: number;
+  totalTracks: number;
+  avgPlaylistSize: number;
+  largestPlaylist: { name: string; tracks: number };
+  growthOverTime: PlaylistGrowth[];
+  topBySize: PlaylistBySize[];
+  diversity: PlaylistDiversity[];
+}
+
+// Section 2: Search Behavior
+export interface SearchOverTime {
+  month: string;
+  count: number;
+}
+
+export interface TopQuery {
+  query: string;
+  count: number;
+}
+
+export interface SearchHourOfDay {
+  hour: number;
+  count: number;
+}
+
+export interface SearchBehavior {
+  totalSearches: number;
+  uniqueQueries: number;
+  avgSearchesPerDay: number;
+  overTime: SearchOverTime[];
+  topQueries: TopQuery[];
+  hourOfDay: SearchHourOfDay[];
+}
+
+// Section 3: Wrapped 2024 Spotlight
+export interface WrappedEra {
+  peakMonth: string;
+  peakMonthIndex: number;
+  genre: string;
+  mood: string;
+  descriptor: string;
+  color: string;
+  tracks: string[];
+}
+
+export interface Wrapped2024 {
+  totalHours: number;
+  topPercentGlobally: number;
+  mostListenedDay: string;
+  mostListenedDayMinutes: number;
+  distinctTracks: number;
+  uniqueArtists: number;
+  topTrackPlayCount: number;
+  topTrackFirstPlayed: string;
+  eras: WrappedEra[];
+}
+
+// Section 4: Library Health (cross-dataset)
+export interface UnsavedFavorite {
+  name: string;
+  artist: string;
+  hours: number;
+}
+
+export interface LibraryArtistConcentration {
+  name: string;
+  count: number;
+}
+
+export interface LibraryHealth {
+  librarySize: number;
+  utilizationRate: number;
+  utilizedCount: number;
+  unsavedFavorites: UnsavedFavorite[];
+  forgottenSaves: number;
+  forgottenSavesPct: number;
+  artistConcentration: LibraryArtistConcentration[];
+}
+
+// Section 5: Playlist x Streaming Overlap (cross-dataset)
+export interface PlaylistStreamEntry {
+  name: string;
+  hours: number;
+  totalTracks: number;
+  streamedTracks: number;
+}
+
+export interface DeadPlaylist {
+  name: string;
+  totalTracks: number;
+  streamedTracks: number;
+}
+
+export interface DiscoverWeeklyHitRate {
+  playlistName: string;
+  totalTracks: number;
+  hitTracks: number;
+  hitRate: number;
+}
+
+export interface PlaylistStreamOverlap {
+  loyaltyScore: number;
+  playlistHours: number;
+  mostPlayedPlaylists: PlaylistStreamEntry[];
+  deadPlaylists: DeadPlaylist[];
+  discoverWeeklyHitRate: DiscoverWeeklyHitRate | null;
+}
+
+// Section 6: Search-to-Listen Pipeline (cross-dataset)
+export interface SearchObsession {
+  name: string;
+  hours: number;
+  firstSearched: string;
+}
+
+export interface SearchListenPipeline {
+  searchToObsession: SearchObsession[];
+  impulsePct: number;
+  impulseCount: number;
+  avgGapMinutes: number;
+}
+
+// ---------------------------------------------------------------------------
+// Main Stats interface
+// ---------------------------------------------------------------------------
 export interface Stats {
   overview: Overview;
   dailyListening: DailyListening[];
@@ -139,4 +287,11 @@ export interface Stats {
   contentTypeSplit: ContentTypeSplit[];
   topPodcasts: TopPodcast[];
   newArtistDiscovery: NewArtistDiscovery[];
+  // Account Data sections
+  playlistInsights: PlaylistInsights;
+  searchBehavior: SearchBehavior;
+  wrapped2024: Wrapped2024;
+  libraryHealth: LibraryHealth;
+  playlistStreamOverlap: PlaylistStreamOverlap;
+  searchListenPipeline: SearchListenPipeline;
 }
