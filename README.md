@@ -13,13 +13,13 @@ A Next.js dashboard that visualizes your Spotify Extended Streaming History data
 2. Place the downloaded folder at `../Spotify Extended Streaming History/` relative to this project, so the directory structure looks like:
 
 ```
-spotify_track_info/
+parent_folder/
 ├── Spotify Extended Streaming History/
 │   ├── Streaming_History_Audio_2020_0.json
 │   ├── Streaming_History_Audio_2020-2021_1.json
 │   ├── ...
 │   └── Streaming_History_Video_2020-2025.json
-└── history_analysis_web/   <-- this project
+└── spotify_history_analysis/   <-- this project
 ```
 
 The preprocessing script expects all `Streaming_History_Audio_*.json` and `Streaming_History_Video_*.json` files in that folder.
