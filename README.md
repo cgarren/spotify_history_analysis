@@ -1,36 +1,64 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Spotify Listening Dashboard
 
-## Getting Started
+A Next.js dashboard that visualizes your Spotify Extended Streaming History data. Includes charts for listening trends, top artists/tracks/albums, skip behavior, platform usage, content type breakdowns, and more.
 
-First, run the development server:
+## Prerequisites
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+- Node.js 18+
+- Python 3.10+ with `pandas` and `numpy` installed
+
+## Data Setup
+
+1. Request your **Extended Streaming History** from Spotify (Account > Privacy > Request Data).
+2. Place the downloaded folder at `../Spotify Extended Streaming History/` relative to this project, so the directory structure looks like:
+
+```
+spotify_track_info/
+├── Spotify Extended Streaming History/
+│   ├── Streaming_History_Audio_2020_0.json
+│   ├── Streaming_History_Audio_2020-2021_1.json
+│   ├── ...
+│   └── Streaming_History_Video_2020-2025.json
+└── history_analysis_web/   <-- this project
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+The preprocessing script expects all `Streaming_History_Audio_*.json` and `Streaming_History_Video_*.json` files in that folder.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Usage
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+### 1. Preprocess the data
 
-## Learn More
+From this directory, run:
 
-To learn more about Next.js, take a look at the following resources:
+```bash
+python preprocess.py
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+This reads all the streaming history JSON files, computes metrics, and writes the result to `public/stats.json`. The dashboard imports this file at build time.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+### 2. Start the dashboard
 
-## Deploy on Vercel
+```bash
+npm install
+npm run dev
+```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+Open [http://localhost:3000](http://localhost:3000) in your browser.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Metrics Included
+
+- **Overview** -- total hours, plays, unique artists/tracks/albums, longest listening streak, average listen duration
+- **Daily / Monthly / Yearly listening** -- time series and bar charts
+- **Hour-of-day and day-of-week distributions** -- bar charts and a heatmap
+- **Top artists, tracks, and albums** -- horizontal bar charts (top 20 each)
+- **Top artists over time** -- stacked area chart (top 10 monthly)
+- **Skip analysis** -- skip rate by artist and over time
+- **Listening behavior** -- playback start/end reasons, shuffle usage trend
+- **Platform and context** -- device breakdown, online vs offline, country
+- **Content type** -- music vs podcasts vs audiobooks over time, top podcasts
+- **New artist discovery** -- unique new artists per month
+
+## Notes
+
+- All timestamps are converted from UTC to **US/Eastern** during preprocessing. To change this, edit the `tz_convert` call in `preprocess.py`.
+- To regenerate stats after receiving a new data export, re-run `python preprocess.py` and reload the page.
