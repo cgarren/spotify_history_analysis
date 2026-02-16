@@ -19,6 +19,12 @@ import WrappedSpotlightCharts from "./components/charts/WrappedSpotlightCharts";
 import LibraryHealthCharts from "./components/charts/LibraryHealthCharts";
 import PlaylistStreamOverlapCharts from "./components/charts/PlaylistStreamOverlapCharts";
 import SearchListenPipelineCharts from "./components/charts/SearchListenPipelineCharts";
+import PlaylistCurationCharts from "./components/charts/PlaylistCurationCharts";
+import PlaybackQualityCharts from "./components/charts/PlaybackQualityCharts";
+import SocialSharingCharts from "./components/charts/SocialSharingCharts";
+import DeviceEvolutionCharts from "./components/charts/DeviceEvolutionCharts";
+import ApiLatencyCharts from "./components/charts/ApiLatencyCharts";
+import NotificationEngagementCharts from "./components/charts/NotificationEngagementCharts";
 
 const stats = statsData as Stats;
 
@@ -227,8 +233,8 @@ export default function Home() {
                     <SearchBehaviorCharts data={stats.searchBehavior} />
                 </Card>
 
-                {/* Library Health */}
-                <Card title="Library Health">
+                {/* Library Insights */}
+                <Card title="Library Insights">
                     <LibraryHealthCharts data={stats.libraryHealth} />
                 </Card>
 
@@ -253,8 +259,79 @@ export default function Home() {
                 </Card>
             </div>
 
+            {/* ================================================================== */}
+            {/* Technical Log Information Sections                                  */}
+            {/* ================================================================== */}
+            <div className="mt-12 mb-8">
+                <h2 className="text-2xl font-bold tracking-tight">
+                    Technical Log Insights
+                </h2>
+                <p className="text-muted text-sm mt-1">
+                    Metrics from Spotify Technical Log Information —
+                    playlist curation, playback quality, social sessions,
+                    device telemetry, API latency, and notifications
+                </p>
+            </div>
+
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                {/* Playlist Curation - full width */}
+                <Card
+                    title="Playlist Curation Behavior"
+                    info="Real-time playlist management events: when, how, and how fast you curate. Cross-referenced with streaming history for impulse-add timing and abandoned tracks."
+                    className="lg:col-span-2"
+                >
+                    <PlaylistCurationCharts data={stats.playlistCuration} />
+                </Card>
+
+                {/* Playback Quality - full width */}
+                <Card
+                    title="Playback Quality & Reliability"
+                    info="Behind-the-scenes look at playback errors, audio stutters, bitrate quality, and download activity from Spotify's technical logs."
+                    className="lg:col-span-2"
+                >
+                    <PlaybackQualityCharts data={stats.playbackQuality} />
+                </Card>
+
+                {/* Social & Sharing */}
+                <Card
+                    title="Social Listening & Sharing"
+                    info="Social (Jam) sessions, sharing behavior, and how many listens it takes before you share a track."
+                >
+                    <SocialSharingCharts data={stats.socialSharing} />
+                </Card>
+
+                {/* Push Notifications */}
+                <Card
+                    title="Push Notification Engagement"
+                    info="How you respond to Spotify's push notifications — engagement rate and how often they lead to actual listening."
+                >
+                    <NotificationEngagementCharts
+                        data={stats.pushNotifications}
+                    />
+                </Card>
+
+                {/* Device & App Evolution - full width */}
+                <Card
+                    title="Device & App Evolution"
+                    info="Your device ecosystem over time: app updates, OS versions, device fingerprints, and multi-device usage patterns."
+                    className="lg:col-span-2"
+                >
+                    <DeviceEvolutionCharts data={stats.deviceEvolution} />
+                </Card>
+
+                {/* API & Latency - full width */}
+                <Card
+                    title="API & Latency Experience"
+                    info="A peek behind the curtain: API response times, feature usage fingerprint from GraphQL operations, and error rates."
+                    className="lg:col-span-2"
+                >
+                    <ApiLatencyCharts data={stats.apiLatency} />
+                </Card>
+            </div>
+
             <footer className="text-center text-muted text-xs mt-12 mb-4">
-                Built from Spotify Extended Streaming History &amp; Account Data
+                Built from Spotify Extended Streaming History, Account
+                Data &amp; Technical Log Information
             </footer>
         </main>
     );

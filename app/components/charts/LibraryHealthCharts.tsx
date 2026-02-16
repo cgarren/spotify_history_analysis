@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import {
     ResponsiveContainer,
     PieChart,
@@ -10,6 +11,8 @@ import {
     Bar,
     XAxis,
     YAxis,
+    LineChart,
+    Line,
 } from "recharts";
 import { LibraryHealth } from "../../types";
 import InfoTooltip from "../InfoTooltip";
@@ -23,6 +26,31 @@ function truncate(s: string, max: number) {
 }
 
 export default function LibraryHealthCharts({ data }: Props) {
+    const [interactionView, setInteractionView] = useState<"all" | "userOnly">(
+        "all"
+    );
+
+    const emptyInteractions = {
+        totalAdds: 0,
+        totalRemoves: 0,
+        netChange: 0,
+        activeMonths: 0,
+        interactionWindow: { start: null, end: null },
+        monthlyTrend: [],
+        kindBreakdown: [],
+    };
+
+    const collectionInteractions = data.collectionInteractions ?? {
+        supportsUserOnly: false,
+        all: emptyInteractions,
+        userOnly: emptyInteractions,
+    };
+
+    const activeInteractions =
+        interactionView === "userOnly" && collectionInteractions.supportsUserOnly
+            ? collectionInteractions.userOnly
+            : collectionInteractions.all;
+
     const utilizationData = [
         { name: "Listened", value: data.utilizedCount },
         { name: "Never played", value: data.librarySize - data.utilizedCount },
@@ -64,6 +92,112 @@ export default function LibraryHealthCharts({ data }: Props) {
                         {data.forgottenSavesPct}% of library
                     </p>
                 </div>
+            </div>
+
+            {/* Library interactions */}
+            <div className="flex flex-col gap-4">
+                <div className="flex items-center gap-2">
+                    {collectionInteractions.supportsUserOnly && (
+                        <>
+                            <button
+                                onClick={() => setInteractionView("all")}
+                                className={`px-3 py-1 rounded-full text-xs font-medium transition-colors ${
+                                    interactionView === "all"
+                                        ? "bg-accent text-black"
+                                        : "bg-card-border text-muted hover:text-foreground"
+                                }`}
+                            >
+                                All Activity
+                            </button>
+                            <button
+                                onClick={() => setInteractionView("userOnly")}
+                                className={`px-3 py-1 rounded-full text-xs font-medium transition-colors ${
+                                    interactionView === "userOnly"
+                                        ? "bg-accent text-black"
+                                        : "bg-card-border text-muted hover:text-foreground"
+                                }`}
+                            >
+                                My Adds Only
+                            </button>
+                        </>
+                    )}
+                    <InfoTooltip text="Tracks and other items you've added to or removed from your library over time. Other activity like listen-later and followed shows is summarized separately." />
+                </div>
+
+                {activeInteractions.monthlyTrend.length > 0 && (
+                    <div>
+                        <h4 className="text-xs text-muted mb-2">
+                            Library Adds & Removes Over Time
+                            <InfoTooltip text="How many items you added to and removed from your library each month." />
+                        </h4>
+                        <ResponsiveContainer width="100%" height={220}>
+                            <LineChart
+                                data={activeInteractions.monthlyTrend}
+                                margin={{ top: 5, right: 20, bottom: 5, left: 0 }}
+                            >
+                                <XAxis dataKey="month" fontSize={10} />
+                                <YAxis fontSize={10} />
+                                <Tooltip
+                                    contentStyle={{
+                                        backgroundColor: "#1e1e1e",
+                                        border: "1px solid #2a2a2a",
+                                        borderRadius: 8,
+                                        fontSize: 12,
+                                    }}
+                                />
+                                <Line
+                                    type="monotone"
+                                    dataKey="adds"
+                                    stroke="#1db954"
+                                    strokeWidth={2}
+                                    dot={false}
+                                />
+                                <Line
+                                    type="monotone"
+                                    dataKey="removes"
+                                    stroke="#ff6b6b"
+                                    strokeWidth={2}
+                                    dot={false}
+                                />
+                            </LineChart>
+                        </ResponsiveContainer>
+                    </div>
+                )}
+
+                {activeInteractions.kindBreakdown.length > 0 && (
+                    <div>
+                        <h4 className="text-xs text-muted mb-2">
+                            Library Interaction Types
+                            <InfoTooltip text="Breakdown of your library adds and removes by type (tracks, albums, artists, etc.)." />
+                        </h4>
+                        <ResponsiveContainer width="100%" height={Math.max(180, activeInteractions.kindBreakdown.length * 30)}>
+                            <BarChart
+                                data={activeInteractions.kindBreakdown}
+                                layout="vertical"
+                                margin={{ left: 10 }}
+                            >
+                                <XAxis type="number" fontSize={10} />
+                                <YAxis
+                                    type="category"
+                                    dataKey="kind"
+                                    width={120}
+                                    tick={{ fontSize: 10 }}
+                                />
+                                <Tooltip
+                                    contentStyle={{
+                                        backgroundColor: "#1e1e1e",
+                                        border: "1px solid #2a2a2a",
+                                        borderRadius: 8,
+                                        fontSize: 12,
+                                    }}
+                                />
+                                <Bar dataKey="adds" fill="#1db954" radius={[0, 4, 4, 0]} />
+                                <Bar dataKey="removes" fill="#ff6b6b" radius={[0, 4, 4, 0]} />
+                            </BarChart>
+                        </ResponsiveContainer>
+                    </div>
+                )}
+
             </div>
 
             {/* Utilization donut */}

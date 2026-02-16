@@ -144,6 +144,8 @@ export interface PlaylistInsights {
   avgPlaylistSize: number;
   largestPlaylist: { name: string; tracks: number };
   growthOverTime: PlaylistGrowth[];
+  growthOverTimeAll: PlaylistGrowth[];
+  growthOverTimeUserOnly: PlaylistGrowth[];
   topBySize: PlaylistBySize[];
   diversity: PlaylistDiversity[];
 }
@@ -208,6 +210,41 @@ export interface LibraryArtistConcentration {
   count: number;
 }
 
+export interface LibraryInteractionMonth {
+  month: string;
+  adds: number;
+  removes: number;
+  net: number;
+}
+
+export interface LibraryInteractionKind {
+  kind: string;
+  adds: number;
+  removes: number;
+  net: number;
+}
+
+export interface LibraryInteractionWindow {
+  start: string | null;
+  end: string | null;
+}
+
+export interface LibraryCollectionInteractionsMetrics {
+  totalAdds: number;
+  totalRemoves: number;
+  netChange: number;
+  activeMonths: number;
+  interactionWindow: LibraryInteractionWindow;
+  monthlyTrend: LibraryInteractionMonth[];
+  kindBreakdown: LibraryInteractionKind[];
+}
+
+export interface LibraryCollectionInteractions {
+  supportsUserOnly: boolean;
+  all: LibraryCollectionInteractionsMetrics;
+  userOnly: LibraryCollectionInteractionsMetrics;
+}
+
 export interface LibraryHealth {
   librarySize: number;
   utilizationRate: number;
@@ -216,6 +253,7 @@ export interface LibraryHealth {
   forgottenSaves: number;
   forgottenSavesPct: number;
   artistConcentration: LibraryArtistConcentration[];
+  collectionInteractions: LibraryCollectionInteractions;
 }
 
 // Section 5: Playlist x Streaming Overlap (cross-dataset)
@@ -262,6 +300,207 @@ export interface SearchListenPipeline {
 }
 
 // ---------------------------------------------------------------------------
+// Spotify Technical Log Information types
+// ---------------------------------------------------------------------------
+
+// Section 1: Playlist Curation Behavior
+export interface ChurnWeek {
+  week: string;
+  adds: number;
+  removes: number;
+}
+
+export interface CurationHeatmapCell {
+  day: string;
+  dayIndex: number;
+  hour: number;
+  count: number;
+}
+
+export interface ImpulseAddBin {
+  bin: string;
+  count: number;
+}
+
+export interface AbandonedTrack {
+  name: string;
+  artist: string;
+}
+
+export interface PlaylistCurationMetrics {
+  totalAdds: number;
+  totalRemoves: number;
+  addsPerWeek: number;
+  removesPerWeek: number;
+  churnOverTime: ChurnWeek[];
+  curationHeatmap: CurationHeatmapCell[];
+  regretCount: number;
+  regretPct: number;
+  impulseAddTiming: ImpulseAddBin[];
+  abandonedCount: number;
+  abandonedPct: number;
+  abandonedExamples: AbandonedTrack[];
+}
+
+export interface PlaylistCuration {
+  all: PlaylistCurationMetrics;
+  userOnly: PlaylistCurationMetrics;
+}
+
+// Section 2: Playback Quality & Reliability
+export interface BitrateEntry {
+  bitrate: string;
+  count: number;
+}
+
+export interface ErrorWeek {
+  week: string;
+  total: number;
+  fatal: number;
+}
+
+export interface StutterWeek {
+  week: string;
+  count: number;
+}
+
+export interface DownloadWeek {
+  week: string;
+  downloads: number;
+}
+
+export interface PlaybackQuality {
+  bitrateDistribution: BitrateEntry[];
+  totalErrors: number;
+  fatalErrors: number;
+  errorOverTime: ErrorWeek[];
+  totalStutters: number;
+  stutterTimeline: StutterWeek[];
+  errorToleranceRetryPct: number;
+  errorToleranceRetries: number;
+  errorToleranceSkips: number;
+  downloadOverTime: DownloadWeek[];
+}
+
+// Section 3: Social Listening & Sharing
+export interface SocialSession {
+  start: string;
+  end: string;
+  durationMinutes: number;
+}
+
+export interface ShareDestination {
+  destination: string;
+  count: number;
+}
+
+export interface ShareMonth {
+  month: string;
+  count: number;
+}
+
+export interface ShareWorthyEntry {
+  name: string;
+  artist: string;
+  priorPlays: number;
+}
+
+export interface SocialSharing {
+  totalSocialSessions: number;
+  avgSessionMinutes: number;
+  longestSessionMinutes: number;
+  totalSocialHours: number;
+  sessions: SocialSession[];
+  totalShares: number;
+  shareDestinations: ShareDestination[];
+  shareOverTime: ShareMonth[];
+  shareWorthyThreshold: ShareWorthyEntry[];
+}
+
+// Section 4: Device & App Evolution
+export interface VersionEvent {
+  date: string;
+  version: string;
+}
+
+export interface OsVersionEvent {
+  date: string;
+  os: string;
+}
+
+export interface DeviceInfo {
+  model: string;
+  firstSeen: string;
+  lastSeen: string;
+  eventCount: number;
+}
+
+export interface MultiDeviceWeek {
+  week: string;
+  deviceCount: number;
+}
+
+export interface SessionHour {
+  hour: number;
+  count: number;
+}
+
+export interface DeviceEvolution {
+  appVersionTimeline: VersionEvent[];
+  osVersionTimeline: OsVersionEvent[];
+  deviceFingerprint: DeviceInfo[];
+  multiDeviceWeekly: MultiDeviceWeek[];
+  avgDevicesPerWeek: number;
+  sessionHourOfDay: SessionHour[];
+}
+
+// Section 5: API & Latency Experience
+export interface LatencyWeek {
+  week: string;
+  avg: number;
+  p95: number;
+}
+
+export interface FeatureUsage {
+  operation: string;
+  count: number;
+}
+
+export interface EndpointEntry {
+  endpoint: string;
+  count: number;
+}
+
+export interface ApiErrorWeek {
+  week: string;
+  errorRate: number;
+  total: number;
+}
+
+export interface ApiLatency {
+  medianLatency: number;
+  latencyOverTime: LatencyWeek[];
+  featureFingerprint: FeatureUsage[];
+  endpointBreakdown: EndpointEntry[];
+  errorOverTime: ApiErrorWeek[];
+}
+
+// Section 6: Push Notification Engagement
+export interface NotificationType {
+  campaignId: string;
+  count: number;
+}
+
+export interface PushNotifications {
+  totalReceived: number;
+  totalInteracted: number;
+  engagementRate: number;
+  notificationTypes: NotificationType[];
+  notificationDrivenListening: number;
+  notificationDrivenPct: number;
+}
+
+// ---------------------------------------------------------------------------
 // Main Stats interface
 // ---------------------------------------------------------------------------
 export interface Stats {
@@ -294,4 +533,11 @@ export interface Stats {
   libraryHealth: LibraryHealth;
   playlistStreamOverlap: PlaylistStreamOverlap;
   searchListenPipeline: SearchListenPipeline;
+  // Technical Log Information sections
+  playlistCuration: PlaylistCuration;
+  playbackQuality: PlaybackQuality;
+  socialSharing: SocialSharing;
+  deviceEvolution: DeviceEvolution;
+  apiLatency: ApiLatency;
+  pushNotifications: PushNotifications;
 }

@@ -1,5 +1,7 @@
 "use client";
 
+import { useState } from "react";
+
 import {
     ResponsiveContainer,
     BarChart,
@@ -16,11 +18,20 @@ interface Props {
     data: PlaylistInsights;
 }
 
+type GrowthView = "all" | "userOnly";
+
 function truncate(s: string, max: number) {
     return s.length > max ? s.slice(0, max - 1) + "…" : s;
 }
 
 export default function PlaylistInsightsCharts({ data }: Props) {
+    const [growthView, setGrowthView] = useState<GrowthView>("all");
+    const hasUserOnlyGrowthData = data.growthOverTimeUserOnly.length > 0;
+    const growthData =
+        growthView === "all"
+            ? data.growthOverTime
+            : data.growthOverTimeUserOnly;
+
     return (
         <div className="flex flex-col gap-6">
             {/* Overview stats */}
@@ -68,12 +79,42 @@ export default function PlaylistInsightsCharts({ data }: Props) {
 
             {/* Playlist growth over time */}
             <div>
+                {hasUserOnlyGrowthData && (
+                    <div className="flex gap-2 mb-2">
+                        <button
+                            onClick={() => setGrowthView("all")}
+                            className={`px-3 py-1 rounded-full text-xs font-medium transition-colors ${
+                                growthView === "all"
+                                    ? "bg-accent text-black"
+                                    : "bg-card-border text-muted hover:text-foreground"
+                            }`}
+                        >
+                            All Activity
+                        </button>
+                        <button
+                            onClick={() => setGrowthView("userOnly")}
+                            className={`px-3 py-1 rounded-full text-xs font-medium transition-colors ${
+                                growthView === "userOnly"
+                                    ? "bg-accent text-black"
+                                    : "bg-card-border text-muted hover:text-foreground"
+                            }`}
+                        >
+                            My Adds Only
+                        </button>
+                    </div>
+                )}
                 <h4 className="text-xs text-muted mb-2">
                     Tracks Added Over Time
-                    <InfoTooltip text="Monthly count of tracks added to any of your playlists." />
+                    <InfoTooltip
+                        text={
+                            hasUserOnlyGrowthData
+                                ? "All Activity uses account playlist snapshot added dates (long history). My Adds Only uses technical logs for manual app-initiated adds."
+                                : "Monthly count of tracks added to any of your playlists."
+                        }
+                    />
                 </h4>
                 <ResponsiveContainer width="100%" height={220}>
-                    <BarChart data={data.growthOverTime}>
+                    <BarChart data={growthData}>
                         <CartesianGrid strokeDasharray="3 3" stroke="#2a2a2a" />
                         <XAxis
                             dataKey="month"
