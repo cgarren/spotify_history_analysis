@@ -27,7 +27,7 @@ function truncate(s: string, max: number) {
 
 export default function LibraryHealthCharts({ data }: Props) {
     const [interactionView, setInteractionView] = useState<"all" | "userOnly">(
-        "all"
+        "all",
     );
 
     const emptyInteractions = {
@@ -47,7 +47,8 @@ export default function LibraryHealthCharts({ data }: Props) {
     };
 
     const activeInteractions =
-        interactionView === "userOnly" && collectionInteractions.supportsUserOnly
+        interactionView === "userOnly" &&
+        collectionInteractions.supportsUserOnly
             ? collectionInteractions.userOnly
             : collectionInteractions.all;
 
@@ -133,7 +134,12 @@ export default function LibraryHealthCharts({ data }: Props) {
                         <ResponsiveContainer width="100%" height={220}>
                             <LineChart
                                 data={activeInteractions.monthlyTrend}
-                                margin={{ top: 5, right: 20, bottom: 5, left: 0 }}
+                                margin={{
+                                    top: 5,
+                                    right: 20,
+                                    bottom: 5,
+                                    left: 0,
+                                }}
                             >
                                 <XAxis dataKey="month" fontSize={10} />
                                 <YAxis fontSize={10} />
@@ -170,7 +176,13 @@ export default function LibraryHealthCharts({ data }: Props) {
                             Library Interaction Types
                             <InfoTooltip text="Breakdown of your library adds and removes by type (tracks, albums, artists, etc.)." />
                         </h4>
-                        <ResponsiveContainer width="100%" height={Math.max(180, activeInteractions.kindBreakdown.length * 30)}>
+                        <ResponsiveContainer
+                            width="100%"
+                            height={Math.max(
+                                180,
+                                activeInteractions.kindBreakdown.length * 30,
+                            )}
+                        >
                             <BarChart
                                 data={activeInteractions.kindBreakdown}
                                 layout="vertical"
@@ -191,13 +203,20 @@ export default function LibraryHealthCharts({ data }: Props) {
                                         fontSize: 12,
                                     }}
                                 />
-                                <Bar dataKey="adds" fill="#1db954" radius={[0, 4, 4, 0]} />
-                                <Bar dataKey="removes" fill="#ff6b6b" radius={[0, 4, 4, 0]} />
+                                <Bar
+                                    dataKey="adds"
+                                    fill="#1db954"
+                                    radius={[0, 4, 4, 0]}
+                                />
+                                <Bar
+                                    dataKey="removes"
+                                    fill="#ff6b6b"
+                                    radius={[0, 4, 4, 0]}
+                                />
                             </BarChart>
                         </ResponsiveContainer>
                     </div>
                 )}
-
             </div>
 
             {/* Utilization donut */}

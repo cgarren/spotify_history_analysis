@@ -267,9 +267,9 @@ export default function Home() {
                     Technical Log Insights
                 </h2>
                 <p className="text-muted text-sm mt-1">
-                    Metrics from Spotify Technical Log Information —
-                    playlist curation, playback quality, social sessions,
-                    device telemetry, API latency, and notifications
+                    Metrics from Spotify Technical Log Information — playlist
+                    curation, playback quality, social sessions, device
+                    telemetry, API latency, and notifications
                 </p>
             </div>
 
@@ -330,8 +330,8 @@ export default function Home() {
             </div>
 
             <footer className="text-center text-muted text-xs mt-12 mb-4">
-                Built from Spotify Extended Streaming History, Account
-                Data &amp; Technical Log Information
+                Built from Spotify Extended Streaming History, Account Data
+                &amp; Technical Log Information
             </footer>
         </main>
     );

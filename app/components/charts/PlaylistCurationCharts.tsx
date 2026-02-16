@@ -13,7 +13,11 @@ import {
     Legend,
 } from "recharts";
 import { useState } from "react";
-import { PlaylistCuration, PlaylistCurationMetrics, CurationHeatmapCell } from "../../types";
+import {
+    PlaylistCuration,
+    PlaylistCurationMetrics,
+    CurationHeatmapCell,
+} from "../../types";
 import InfoTooltip from "../InfoTooltip";
 
 interface Props {
@@ -101,8 +105,17 @@ function truncate(s: string, max: number) {
 }
 
 const VIEW_TABS: { key: CurationView; label: string; tooltip: string }[] = [
-    { key: "all", label: "All Activity", tooltip: "All playlist add/remove events including automated tools." },
-    { key: "userOnly", label: "My Adds Only", tooltip: "Only adds/removes initiated from the Spotify app (excludes automated tool activity)." },
+    {
+        key: "all",
+        label: "All Activity",
+        tooltip: "All playlist add/remove events including automated tools.",
+    },
+    {
+        key: "userOnly",
+        label: "My Adds Only",
+        tooltip:
+            "Only adds/removes initiated from the Spotify app (excludes automated tool activity).",
+    },
 ];
 
 export default function PlaylistCurationCharts({ data: rawData }: Props) {

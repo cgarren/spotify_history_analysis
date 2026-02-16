@@ -22,7 +22,14 @@ interface Props {
     data: PlaybackQuality;
 }
 
-const PIE_COLORS = ["#1db954", "#6bcb77", "#ff6b6b", "#ffd93d", "#6c5ce7", "#a29bfe"];
+const PIE_COLORS = [
+    "#1db954",
+    "#6bcb77",
+    "#ff6b6b",
+    "#ffd93d",
+    "#6c5ce7",
+    "#a29bfe",
+];
 
 export default function PlaybackQualityCharts({ data }: Props) {
     return (
@@ -72,71 +79,87 @@ export default function PlaybackQualityCharts({ data }: Props) {
             </div>
 
             {/* Audio Quality Profile */}
-            {data.bitrateDistribution.length > 0 && (() => {
-                const total = data.bitrateDistribution.reduce((s, d) => s + d.count, 0);
-                const withPct = data.bitrateDistribution.map((d, i) => ({
-                    ...d,
-                    pct: total > 0 ? Math.round((d.count / total) * 100) : 0,
-                    color: PIE_COLORS[i % PIE_COLORS.length],
-                }));
-                return (
-                    <div>
-                        <h4 className="text-xs text-muted mb-2">
-                            Audio Quality Profile
-                            <InfoTooltip text="Distribution of audio bitrates across your downloads. Higher bitrate = better quality." />
-                        </h4>
-                        <div className="flex flex-col sm:flex-row items-center gap-4">
-                            <ResponsiveContainer width="100%" height={220}>
-                                <PieChart>
-                                    <Pie
-                                        data={data.bitrateDistribution}
-                                        dataKey="count"
-                                        nameKey="bitrate"
-                                        cx="50%"
-                                        cy="50%"
-                                        outerRadius={80}
-                                        label={({ name, percent }) => {
-                                            const p = (percent ?? 0) * 100;
-                                            return p >= 5 ? `${name} (${p.toFixed(0)}%)` : "";
-                                        }}
-                                        labelLine={false}
-                                        fontSize={11}
-                                    >
-                                        {withPct.map((entry, i) => (
-                                            <Cell key={i} fill={entry.color} />
-                                        ))}
-                                    </Pie>
-                                    <Tooltip
-                                        contentStyle={{
-                                            backgroundColor: "#1e1e1e",
-                                            border: "1px solid #2a2a2a",
-                                            borderRadius: 8,
-                                            fontSize: 12,
-                                        }}
-                                    />
-                                </PieChart>
-                            </ResponsiveContainer>
-                            {/* Legend for all slices */}
-                            <div className="flex flex-col gap-1.5 min-w-[140px]">
-                                {withPct.map((entry, i) => (
-                                    <div key={i} className="flex items-center gap-2 text-xs">
-                                        <div
-                                            className="w-3 h-3 rounded-sm shrink-0"
-                                            style={{ backgroundColor: entry.color }}
+            {data.bitrateDistribution.length > 0 &&
+                (() => {
+                    const total = data.bitrateDistribution.reduce(
+                        (s, d) => s + d.count,
+                        0,
+                    );
+                    const withPct = data.bitrateDistribution.map((d, i) => ({
+                        ...d,
+                        pct:
+                            total > 0 ? Math.round((d.count / total) * 100) : 0,
+                        color: PIE_COLORS[i % PIE_COLORS.length],
+                    }));
+                    return (
+                        <div>
+                            <h4 className="text-xs text-muted mb-2">
+                                Audio Quality Profile
+                                <InfoTooltip text="Distribution of audio bitrates across your downloads. Higher bitrate = better quality." />
+                            </h4>
+                            <div className="flex flex-col sm:flex-row items-center gap-4">
+                                <ResponsiveContainer width="100%" height={220}>
+                                    <PieChart>
+                                        <Pie
+                                            data={data.bitrateDistribution}
+                                            dataKey="count"
+                                            nameKey="bitrate"
+                                            cx="50%"
+                                            cy="50%"
+                                            outerRadius={80}
+                                            label={({ name, percent }) => {
+                                                const p = (percent ?? 0) * 100;
+                                                return p >= 5
+                                                    ? `${name} (${p.toFixed(0)}%)`
+                                                    : "";
+                                            }}
+                                            labelLine={false}
+                                            fontSize={11}
+                                        >
+                                            {withPct.map((entry, i) => (
+                                                <Cell
+                                                    key={i}
+                                                    fill={entry.color}
+                                                />
+                                            ))}
+                                        </Pie>
+                                        <Tooltip
+                                            contentStyle={{
+                                                backgroundColor: "#1e1e1e",
+                                                border: "1px solid #2a2a2a",
+                                                borderRadius: 8,
+                                                fontSize: 12,
+                                            }}
                                         />
-                                        <span className="text-[#e0e0e0]">
-                                            {entry.bitrate}
-                                        </span>
-                                        <span className="text-muted ml-auto">
-                                            {entry.pct}%
-                                        </span>
-                                    </div>
-                                ))}
+                                    </PieChart>
+                                </ResponsiveContainer>
+                                {/* Legend for all slices */}
+                                <div className="flex flex-col gap-1.5 min-w-[140px]">
+                                    {withPct.map((entry, i) => (
+                                        <div
+                                            key={i}
+                                            className="flex items-center gap-2 text-xs"
+                                        >
+                                            <div
+                                                className="w-3 h-3 rounded-sm shrink-0"
+                                                style={{
+                                                    backgroundColor:
+                                                        entry.color,
+                                                }}
+                                            />
+                                            <span className="text-[#e0e0e0]">
+                                                {entry.bitrate}
+                                            </span>
+                                            <span className="text-muted ml-auto">
+                                                {entry.pct}%
+                                            </span>
+                                        </div>
+                                    ))}
+                                </div>
                             </div>
                         </div>
-                    </div>
-                );
-            })()}
+                    );
+                })()}
 
             {/* Error Rate Over Time */}
             {data.errorOverTime.length > 0 && (
