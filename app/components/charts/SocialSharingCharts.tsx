@@ -11,6 +11,8 @@ import {
     PieChart,
     Pie,
     Cell,
+    LineChart,
+    Line,
 } from "recharts";
 import { SocialSharing } from "../../types";
 import InfoTooltip from "../InfoTooltip";
@@ -19,7 +21,15 @@ interface Props {
     data: SocialSharing;
 }
 
-const PIE_COLORS = ["#1db954", "#6bcb77", "#ff6b6b", "#ffd93d", "#6c5ce7", "#a29bfe", "#fd79a8"];
+const PIE_COLORS = [
+    "#1db954",
+    "#6bcb77",
+    "#ff6b6b",
+    "#ffd93d",
+    "#6c5ce7",
+    "#a29bfe",
+    "#fd79a8",
+];
 
 function truncate(s: string, max: number) {
     return s.length > max ? s.slice(0, max - 1) + "…" : s;
@@ -71,50 +81,101 @@ export default function SocialSharingCharts({ data }: Props) {
             </div>
 
             {/* Social Session Timeline */}
-            {data.sessions.length > 0 && (
-                <div>
-                    <h4 className="text-xs text-muted mb-2">
-                        Social Session Timeline (Last 20)
-                        <InfoTooltip text="Each bar represents a social listening session. Length indicates duration. Showing the 20 most recent." />
-                    </h4>
-                    <div className="space-y-1">
-                        {data.sessions.slice(-20).map((session, i) => {
-                            const maxDuration = Math.max(
-                                ...data.sessions.map(
-                                    (s) => s.durationMinutes,
-                                ),
-                                1,
-                            );
-                            const widthPct = Math.max(
-                                (session.durationMinutes / maxDuration) * 100,
-                                5,
-                            );
-                            const startDate = new Date(
-                                session.start,
-                            ).toLocaleDateString("en-US", {
-                                month: "short",
-                                day: "numeric",
-                            });
-                            return (
-                                <div key={i} className="flex items-center gap-2">
-                                    <span className="text-[10px] text-muted w-16 text-right shrink-0">
-                                        {startDate}
-                                    </span>
-                                    <div
-                                        className="h-5 rounded bg-accent/70 flex items-center px-2"
-                                        style={{ width: `${widthPct}%` }}
-                                        title={`${session.durationMinutes} min`}
-                                    >
-                                        <span className="text-[10px] text-white whitespace-nowrap">
-                                            {session.durationMinutes} min
-                                        </span>
-                                    </div>
-                                </div>
-                            );
-                        })}
-                    </div>
-                </div>
-            )}
+            {data.sessions.length > 0 &&
+                (() => {
+                    // Aggregate sessions into weekly averages
+                    const weekMap = new Map<
+                        string,
+                        { total: number; count: number }
+                    >();
+                    for (const s of data.sessions) {
+                        const d = new Date(s.start);
+                        // Week start (Monday)
+                        const day = d.getDay();
+                        const diff = d.getDate() - day + (day === 0 ? -6 : 1);
+                        const weekStart = new Date(d);
+                        weekStart.setDate(diff);
+                        const key = weekStart.toLocaleDateString("en-US", {
+                            month: "short",
+                            day: "numeric",
+                            year: "2-digit",
+                        });
+                        const existing = weekMap.get(key) ?? {
+                            total: 0,
+                            count: 0,
+                        };
+                        existing.total += s.durationMinutes;
+                        existing.count += 1;
+                        weekMap.set(key, existing);
+                    }
+                    const weeklyData = Array.from(weekMap.entries()).map(
+                        ([week, v]) => ({
+                            week,
+                            avgMinutes: Math.round(v.total / v.count),
+                            sessions: v.count,
+                        }),
+                    );
+
+                    return (
+                        <div>
+                            <h4 className="text-xs text-muted mb-2">
+                                Avg Session Minutes by Week
+                                <InfoTooltip text="Average social listening session duration per week." />
+                            </h4>
+                            <ResponsiveContainer width="100%" height={220}>
+                                <LineChart
+                                    data={weeklyData}
+                                    margin={{
+                                        top: 5,
+                                        right: 20,
+                                        bottom: 5,
+                                        left: 0,
+                                    }}
+                                >
+                                    <CartesianGrid
+                                        strokeDasharray="3 3"
+                                        stroke="#2a2a2a"
+                                    />
+                                    <XAxis dataKey="week" fontSize={10} />
+                                    <YAxis
+                                        fontSize={10}
+                                        tickFormatter={(v: number) => `${v}m`}
+                                    />
+                                    <Tooltip
+                                        contentStyle={{
+                                            backgroundColor: "#1e1e1e",
+                                            border: "1px solid #2a2a2a",
+                                            borderRadius: 8,
+                                            fontSize: 12,
+                                        }}
+                                        formatter={(value, name) => {
+                                            if (name === "avgMinutes")
+                                                return [
+                                                    `${value} min`,
+                                                    "Avg Duration",
+                                                ];
+                                            return [value, name];
+                                        }}
+                                        labelFormatter={(label, payload) => {
+                                            const item = payload?.[0]?.payload;
+                                            return item
+                                                ? `Week of ${label} (${item.sessions} session${item.sessions !== 1 ? "s" : ""})`
+                                                : label;
+                                        }}
+                                    />
+                                    <Line
+                                        type="monotone"
+                                        dataKey="avgMinutes"
+                                        stroke="#1db954"
+                                        strokeWidth={2}
+                                        dot={{ r: 4, fill: "#1db954" }}
+                                        activeDot={{ r: 6 }}
+                                    />
+                                </LineChart>
+                            </ResponsiveContainer>
+                        </div>
+                    );
+                })()}
 
             {/* Share Destinations + Share Over Time side by side */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -232,11 +293,7 @@ export default function SocialSharingCharts({ data }: Props) {
                             />
                             <Tooltip
                                 content={({ active, payload }) => {
-                                    if (
-                                        !active ||
-                                        !payload ||
-                                        !payload.length
-                                    )
+                                    if (!active || !payload || !payload.length)
                                         return null;
                                     const row = payload[0].payload;
                                     return (

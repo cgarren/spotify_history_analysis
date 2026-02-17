@@ -238,9 +238,9 @@ export default function Home() {
                     <LibraryHealthCharts data={stats.libraryHealth} />
                 </Card>
 
-                {/* Playlist x Streaming Overlap - full width */}
+                {/* Library/Playlists x Streaming Overlap - full width */}
                 <Card
-                    title="Playlist x Streaming Overlap"
+                    title="Library/Playlists x Streaming Overlap"
                     className="lg:col-span-2"
                 >
                     <PlaylistStreamOverlapCharts

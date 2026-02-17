@@ -855,6 +855,22 @@ playlist_stream_hours = float(
 total_stream_hours = float(music_with_uri["hours"].sum())
 playlist_loyalty_score = round(playlist_stream_hours / max(total_stream_hours, 1) * 100, 1)
 
+# Library (Liked Songs) streaming overlap
+library_stream_hours = float(
+    music_with_uri[music_with_uri["spotify_track_uri"].isin(library_uris)]["hours"].sum()
+)
+library_streamed_count = int(
+    music_with_uri[music_with_uri["spotify_track_uri"].isin(library_uris)]["spotify_track_uri"].nunique()
+)
+library_loyalty_score = round(library_stream_hours / max(total_stream_hours, 1) * 100, 1)
+
+# Combined: playlists + library
+combined_uris = all_playlist_uris | library_uris
+combined_stream_hours = float(
+    music_with_uri[music_with_uri["spotify_track_uri"].isin(combined_uris)]["hours"].sum()
+)
+combined_loyalty_score = round(combined_stream_hours / max(total_stream_hours, 1) * 100, 1)
+
 # Most-played playlists (by streaming hours)
 playlist_hours_list = []
 for name, uri_set in playlist_uri_map.items():
@@ -868,6 +884,15 @@ for name, uri_set in playlist_uri_map.items():
         "totalTracks": len(uri_set),
         "streamedTracks": streamed_count,
     })
+playlist_hours_list.sort(key=lambda x: x["hours"], reverse=True)
+
+# Insert Liked Songs library into the ranked list
+playlist_hours_list.append({
+    "name": "Liked Songs",
+    "hours": round(library_stream_hours, 1),
+    "totalTracks": library_size,
+    "streamedTracks": library_streamed_count,
+})
 playlist_hours_list.sort(key=lambda x: x["hours"], reverse=True)
 
 # Dead playlists: < 10% of tracks ever streamed
@@ -909,11 +934,17 @@ if dw_name:
 stats["playlistStreamOverlap"] = {
     "loyaltyScore": playlist_loyalty_score,
     "playlistHours": playlist_stream_hours,
+    "libraryLoyaltyScore": library_loyalty_score,
+    "libraryStreamHours": round(library_stream_hours, 1),
+    "libraryTotalTracks": library_size,
+    "libraryStreamedTracks": library_streamed_count,
+    "combinedLoyaltyScore": combined_loyalty_score,
+    "combinedStreamHours": round(combined_stream_hours, 1),
     "mostPlayedPlaylists": playlist_hours_list[:15],
     "deadPlaylists": dead_playlists[:10],
     "discoverWeeklyHitRate": dw_hit_rate,
 }
-print(f"  Playlist loyalty: {playlist_loyalty_score}%, DW hit rate: {dw_hit_rate}")
+print(f"  Playlist loyalty: {playlist_loyalty_score}%, Library loyalty: {library_loyalty_score}%, Combined: {combined_loyalty_score}%, DW hit rate: {dw_hit_rate}")
 
 # ---------------------------------------------------------------------------
 # 3f. Search-to-Listen Pipeline (cross-dataset)

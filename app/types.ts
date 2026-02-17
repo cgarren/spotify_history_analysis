@@ -280,6 +280,12 @@ export interface DiscoverWeeklyHitRate {
 export interface PlaylistStreamOverlap {
   loyaltyScore: number;
   playlistHours: number;
+  libraryLoyaltyScore: number;
+  libraryStreamHours: number;
+  libraryTotalTracks: number;
+  libraryStreamedTracks: number;
+  combinedLoyaltyScore: number;
+  combinedStreamHours: number;
   mostPlayedPlaylists: PlaylistStreamEntry[];
   deadPlaylists: DeadPlaylist[];
   discoverWeeklyHitRate: DiscoverWeeklyHitRate | null;

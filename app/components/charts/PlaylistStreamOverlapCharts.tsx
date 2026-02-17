@@ -23,26 +23,41 @@ export default function PlaylistStreamOverlapCharts({ data }: Props) {
     return (
         <div className="flex flex-col gap-6">
             {/* Hero stats */}
-            <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
                 <div className="text-center">
                     <p className="text-xs text-muted">
-                        Playlist Loyalty Score
-                        <InfoTooltip text="Percentage of your total listening hours that came from tracks found in your playlists." />
+                        Combined Loyalty
+                        <InfoTooltip text="Percentage of your total listening that came from tracks in your playlists or Liked Songs combined." />
                     </p>
                     <p className="text-3xl font-bold text-accent">
-                        {data.loyaltyScore}%
+                        {data.combinedLoyaltyScore}%
                     </p>
                     <p className="text-xs text-muted">
-                        of listening from playlists
+                        {data.combinedStreamHours.toLocaleString()} hrs
                     </p>
                 </div>
                 <div className="text-center">
                     <p className="text-xs text-muted">
-                        Playlist Stream Hours
-                        <InfoTooltip text="Total hours you spent listening to tracks that exist in any of your playlists." />
+                        Playlist Loyalty
+                        <InfoTooltip text="Percentage of your listening hours from tracks found in your playlists." />
                     </p>
                     <p className="text-2xl font-bold text-accent">
-                        {data.playlistHours.toLocaleString()}
+                        {data.loyaltyScore}%
+                    </p>
+                    <p className="text-xs text-muted">
+                        {data.playlistHours.toLocaleString()} hrs
+                    </p>
+                </div>
+                <div className="text-center">
+                    <p className="text-xs text-muted">
+                        Library Loyalty
+                        <InfoTooltip text="Percentage of your listening hours from tracks saved to your Liked Songs." />
+                    </p>
+                    <p className="text-2xl font-bold text-accent">
+                        {data.libraryLoyaltyScore}%
+                    </p>
+                    <p className="text-xs text-muted">
+                        {data.libraryStreamHours.toLocaleString()} hrs
                     </p>
                 </div>
                 {data.discoverWeeklyHitRate && (
@@ -66,8 +81,8 @@ export default function PlaylistStreamOverlapCharts({ data }: Props) {
             {data.mostPlayedPlaylists.length > 0 && (
                 <div>
                     <h4 className="text-xs text-muted mb-2">
-                        Most-Played Playlists
-                        <InfoTooltip text="Playlists ranked by total streaming hours of their tracks in your listening history." />
+                        Most-Played Library/Playlists
+                        <InfoTooltip text="Your playlists and Liked Songs library ranked by total streaming hours." />
                     </h4>
                     <ResponsiveContainer
                         width="100%"
