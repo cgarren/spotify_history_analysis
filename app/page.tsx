@@ -44,12 +44,10 @@ export default function Home() {
                 </p>
             </div>
 
-            {/* Streaming History Section */}
-            <div className="mb-8">
-                <h2 className="text-2xl font-bold tracking-tight text-foreground mb-6">
-                    Listening Overview
-                </h2>
-            </div>
+            {/* Listening Overview Section */}
+            <h2 className="text-2xl font-bold tracking-tight text-foreground mb-6">
+                Listening Overview
+            </h2>
 
             {/* Overview stats row */}
             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-7 gap-3 mb-10">
