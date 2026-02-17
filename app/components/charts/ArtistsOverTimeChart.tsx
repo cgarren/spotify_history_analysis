@@ -28,15 +28,26 @@ const COLORS = [
   "#00bcd4",
 ];
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-function CustomTooltip({ active, payload, label }: any) {
+interface TooltipPayloadItem {
+  dataKey: string;
+  value: number;
+  color: string;
+}
+
+interface TooltipProps {
+  active?: boolean;
+  payload?: TooltipPayloadItem[];
+  label?: string;
+}
+
+function CustomTooltip({ active, payload, label }: TooltipProps) {
   if (!active || !payload || !payload.length) return null;
   // Reverse so the top of the stack is listed first (matches visual order)
-  const items = [...payload].reverse().filter((p: any) => p.value > 0);
+  const items = [...payload].reverse().filter((p) => p.value > 0);
   return (
     <div className="bg-[#1e1e1e] border border-[#2a2a2a] rounded-lg px-3 py-2 text-xs max-w-[220px]">
       <p className="font-medium text-[#e0e0e0] mb-1.5">{label}</p>
-      {items.map((item: any, i: number) => (
+      {items.map((item, i: number) => (
         <div key={i} className="flex items-center justify-between gap-3 py-0.5">
           <div className="flex items-center gap-1.5 min-w-0">
             <div

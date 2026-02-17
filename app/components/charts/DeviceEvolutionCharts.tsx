@@ -12,7 +12,7 @@ import {
     LineChart,
     Line,
 } from "recharts";
-import { DeviceEvolution, VersionEvent, OsVersionEvent } from "../../types";
+import { DeviceEvolution } from "../../types";
 import InfoTooltip from "../InfoTooltip";
 
 interface Props {
@@ -51,10 +51,6 @@ function buildSegments(
                 ? new Date(sorted[i + 1].date)
                 : globalEnd,
     }));
-}
-
-function formatDate(d: Date): string {
-    return d.toLocaleDateString("en-US", { month: "short", day: "numeric" });
 }
 
 function formatDateFull(d: Date): string {
@@ -122,10 +118,6 @@ function SegmentedTimeline({ lanes }: { lanes: TimelineLane[] }) {
                         </p>
                         <div className="relative h-8 rounded-md overflow-hidden bg-[#1a1a1a] flex">
                             {lane.segments.map((seg, si) => {
-                                const startPct =
-                                    ((seg.startDate.getTime() - globalMin) /
-                                        totalMs) *
-                                    100;
                                 const widthPct =
                                     ((seg.endDate.getTime() -
                                         seg.startDate.getTime()) /
@@ -284,7 +276,7 @@ export default function DeviceEvolutionCharts({ data }: Props) {
             {/* Device Fingerprint Cards */}
             {data.deviceFingerprint.length > 0 && (
                 <div>
-                    <h4 className="text-xs text-muted mb-2">
+                    <h4 className="text-xs font-medium text-muted uppercase tracking-wide mb-3">
                         Your Devices
                         <InfoTooltip text="All devices detected in your technical logs with first and last seen dates." />
                     </h4>
@@ -312,7 +304,7 @@ export default function DeviceEvolutionCharts({ data }: Props) {
             {/* App Version Timeline */}
             {appLanes.length > 0 && (
                 <div>
-                    <h4 className="text-xs text-muted mb-2">
+                    <h4 className="text-xs font-medium text-muted uppercase tracking-wide mb-3">
                         App Version Timeline
                         <InfoTooltip text="Spotify app version history split by platform. Each segment shows a version's active period. Hover for details." />
                     </h4>
@@ -323,7 +315,7 @@ export default function DeviceEvolutionCharts({ data }: Props) {
             {/* OS Version History */}
             {osLanes.length > 0 && (
                 <div>
-                    <h4 className="text-xs text-muted mb-2">
+                    <h4 className="text-xs font-medium text-muted uppercase tracking-wide mb-3">
                         OS Version History
                         <InfoTooltip text="Operating system version history split by platform. Each segment shows how long you ran each OS version." />
                     </h4>
@@ -334,7 +326,7 @@ export default function DeviceEvolutionCharts({ data }: Props) {
             {/* Multi-Device Juggler */}
             {data.multiDeviceWeekly.length > 0 && (
                 <div>
-                    <h4 className="text-xs text-muted mb-2">
+                    <h4 className="text-xs font-medium text-muted uppercase tracking-wide mb-3">
                         Multi-Device Usage
                         <InfoTooltip text="How many distinct devices you used per week. Average shown in the stat." />
                     </h4>
@@ -387,7 +379,7 @@ export default function DeviceEvolutionCharts({ data }: Props) {
             {/* Session Hour of Day (when you open Spotify) */}
             {data.sessionHourOfDay.length > 0 && (
                 <div>
-                    <h4 className="text-xs text-muted mb-2">
+                    <h4 className="text-xs font-medium text-muted uppercase tracking-wide mb-3">
                         When You Open Spotify
                         <InfoTooltip text="Distribution of streaming session starts by hour of day, based on raw core stream events." />
                     </h4>

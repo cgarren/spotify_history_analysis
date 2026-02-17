@@ -162,7 +162,7 @@ export default function LibraryHealthCharts({ data }: Props) {
 
                 {activeInteractions.weeklyTrend.length > 0 && (
                     <div>
-                        <h4 className="text-xs text-muted mb-2">
+                        <h4 className="text-xs font-medium text-muted uppercase tracking-wide mb-3">
                             Library Adds & Removes Over Time
                             <InfoTooltip text="How many items you added to and removed from your library each week." />
                         </h4>
@@ -221,7 +221,7 @@ export default function LibraryHealthCharts({ data }: Props) {
 
                 {activeInteractions.kindBreakdown.length > 0 && (
                     <div>
-                        <h4 className="text-xs text-muted mb-2">
+                        <h4 className="text-xs font-medium text-muted uppercase tracking-wide mb-3">
                             Library Interaction Types
                             <InfoTooltip text="Breakdown of your library adds and removes by type (tracks, albums, artists, etc.)." />
                         </h4>
@@ -270,7 +270,7 @@ export default function LibraryHealthCharts({ data }: Props) {
 
             {/* Utilization donut */}
             <div>
-                <h4 className="text-xs text-muted mb-2 text-center">
+                <h4 className="text-xs font-medium text-muted uppercase tracking-wide mb-3 text-center">
                     Library Usage Breakdown
                     <InfoTooltip text="Breakdown of saved tracks you've listened to at least once vs. tracks you've never played." />
                 </h4>
@@ -326,7 +326,7 @@ export default function LibraryHealthCharts({ data }: Props) {
                 </div>
                 {neverPlayedExamples.length > 0 && (
                     <div className="mt-3">
-                        <h4 className="text-xs text-muted mb-2">
+                        <h4 className="text-xs font-medium text-muted uppercase tracking-wide mb-3">
                             Sample Never-Played Tracks
                             <InfoTooltip text="Examples of tracks in your library that never appear in your streaming history." />
                         </h4>
@@ -352,7 +352,7 @@ export default function LibraryHealthCharts({ data }: Props) {
             {/* Unsaved Favorites */}
             {data.unsavedFavorites.length > 0 && (
                 <div>
-                    <h4 className="text-xs text-muted mb-2">
+                    <h4 className="text-xs font-medium text-muted uppercase tracking-wide mb-3">
                         Unsaved Favorites
                         <InfoTooltip text="Your most-played tracks by hours that aren't in your Liked Songs library." />
                     </h4>
@@ -412,7 +412,7 @@ export default function LibraryHealthCharts({ data }: Props) {
             {(artistConcentration.length > 0 ||
                 albumConcentration.length > 0) && (
                 <div>
-                    <h4 className="text-xs text-muted mb-2">
+                    <h4 className="text-xs font-medium text-muted uppercase tracking-wide mb-3">
                         Top in Your Library
                         <InfoTooltip text="See which artists or albums have the most saved tracks in your library." />
                     </h4>

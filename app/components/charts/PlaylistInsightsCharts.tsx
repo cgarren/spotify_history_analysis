@@ -37,7 +37,7 @@ export default function PlaylistInsightsCharts({ data }: Props) {
             {/* Overview stats */}
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
                 <div className="text-center">
-                    <p className="text-xs text-muted">
+                    <p className="text-xs font-medium text-muted uppercase tracking-wide mb-1">
                         Total Playlists
                         <InfoTooltip text="Total number of playlists in your Spotify account." />
                     </p>
@@ -46,7 +46,7 @@ export default function PlaylistInsightsCharts({ data }: Props) {
                     </p>
                 </div>
                 <div className="text-center">
-                    <p className="text-xs text-muted">
+                    <p className="text-xs font-medium text-muted uppercase tracking-wide mb-1">
                         Total Tracks
                         <InfoTooltip text="Combined track count across all of your playlists." />
                     </p>
@@ -55,7 +55,7 @@ export default function PlaylistInsightsCharts({ data }: Props) {
                     </p>
                 </div>
                 <div className="text-center">
-                    <p className="text-xs text-muted">
+                    <p className="text-xs font-medium text-muted uppercase tracking-wide mb-1">
                         Avg Playlist Size
                         <InfoTooltip text="Average number of tracks per playlist." />
                     </p>
@@ -64,7 +64,7 @@ export default function PlaylistInsightsCharts({ data }: Props) {
                     </p>
                 </div>
                 <div className="text-center">
-                    <p className="text-xs text-muted">
+                    <p className="text-xs font-medium text-muted uppercase tracking-wide mb-1">
                         Largest Playlist
                         <InfoTooltip text="Your playlist with the most tracks." />
                     </p>
@@ -103,7 +103,7 @@ export default function PlaylistInsightsCharts({ data }: Props) {
                         </button>
                     </div>
                 )}
-                <h4 className="text-xs text-muted mb-2">
+                <h4 className="text-xs font-medium text-muted uppercase tracking-wide mb-3">
                     Tracks Added Over Time
                     <InfoTooltip
                         text={
@@ -143,7 +143,7 @@ export default function PlaylistInsightsCharts({ data }: Props) {
 
             {/* Top playlists by size */}
             <div>
-                <h4 className="text-xs text-muted mb-2">
+                <h4 className="text-xs font-medium text-muted uppercase tracking-wide mb-3">
                     Largest Playlists
                     <InfoTooltip text="Your playlists ranked by number of tracks." />
                 </h4>
@@ -185,7 +185,7 @@ export default function PlaylistInsightsCharts({ data }: Props) {
             {/* Playlist diversity */}
             {data.diversity.length > 0 && (
                 <div>
-                    <h4 className="text-xs text-muted mb-2">
+                    <h4 className="text-xs font-medium text-muted uppercase tracking-wide mb-3">
                         Playlist Diversity
                         <InfoTooltip text="Ratio of unique artists to total tracks. Higher means more eclectic; lower means more focused on fewer artists." />
                     </h4>

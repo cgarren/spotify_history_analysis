@@ -14,13 +14,13 @@ export default function StatNumber({
     info,
 }: StatNumberProps) {
     return (
-        <div className="bg-card-bg border border-card-border rounded-xl p-5 flex flex-col items-center justify-center text-center">
-            <p className="text-xs font-semibold text-muted uppercase tracking-wide mb-1 flex items-center">
+        <div className="bg-card-bg border border-card-border rounded-xl p-6 flex flex-col items-center justify-center text-center min-h-[120px]">
+            <p className="text-xs font-semibold text-muted uppercase tracking-wide mb-2 flex items-center">
                 {label}
                 {info && <InfoTooltip text={info} />}
             </p>
             <p className="text-3xl font-bold text-accent">{value}</p>
-            {sub && <p className="text-xs text-muted mt-1">{sub}</p>}
+            {sub && <p className="text-xs text-muted mt-1.5">{sub}</p>}
         </div>
     );
 }

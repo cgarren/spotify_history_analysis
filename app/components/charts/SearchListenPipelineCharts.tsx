@@ -66,7 +66,7 @@ export default function SearchListenPipelineCharts({ data }: Props) {
             {/* Search to Obsession */}
             {data.searchToObsession.length > 0 && (
                 <div>
-                    <h4 className="text-xs text-muted mb-2">
+                    <h4 className="text-xs font-medium text-muted uppercase tracking-wide mb-3">
                         Search to Obsession
                         <InfoTooltip text="Artists you searched for who went on to accumulate the most listening hours after that first search." />
                     </h4>

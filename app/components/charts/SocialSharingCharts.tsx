@@ -118,7 +118,7 @@ export default function SocialSharingCharts({ data }: Props) {
 
                     return (
                         <div>
-                            <h4 className="text-xs text-muted mb-2">
+                            <h4 className="text-xs font-medium text-muted uppercase tracking-wide mb-3">
                                 Avg Session Minutes by Week
                                 <InfoTooltip text="Average social listening session duration per week." />
                             </h4>
@@ -182,7 +182,7 @@ export default function SocialSharingCharts({ data }: Props) {
                 {/* Share Destinations */}
                 {data.shareDestinations.length > 0 && (
                     <div>
-                        <h4 className="text-xs text-muted mb-2">
+                        <h4 className="text-xs font-medium text-muted uppercase tracking-wide mb-3">
                             Share Destinations
                             <InfoTooltip text="Where you share Spotify content — SMS, copy link, native share, etc." />
                         </h4>
@@ -228,7 +228,7 @@ export default function SocialSharingCharts({ data }: Props) {
                 {/* Share Over Time */}
                 {data.shareOverTime.length > 0 && (
                     <div>
-                        <h4 className="text-xs text-muted mb-2">
+                        <h4 className="text-xs font-medium text-muted uppercase tracking-wide mb-3">
                             Share Activity Over Time
                             <InfoTooltip text="Monthly count of shares. Shows when you feel most compelled to share music." />
                         </h4>
@@ -267,7 +267,7 @@ export default function SocialSharingCharts({ data }: Props) {
             {/* Share-Worthy Threshold */}
             {data.shareWorthyThreshold.length > 0 && (
                 <div>
-                    <h4 className="text-xs text-muted mb-2">
+                    <h4 className="text-xs font-medium text-muted uppercase tracking-wide mb-3">
                         Share-Worthy Threshold
                         <InfoTooltip text="How many times you listened to a track before sharing it. Shows your confidence threshold before recommending music." />
                     </h4>

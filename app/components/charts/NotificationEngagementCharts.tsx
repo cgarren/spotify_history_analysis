@@ -7,7 +7,6 @@ import {
     XAxis,
     YAxis,
     Tooltip,
-    CartesianGrid,
 } from "recharts";
 import { PushNotifications } from "../../types";
 import InfoTooltip from "../InfoTooltip";
@@ -71,7 +70,7 @@ export default function NotificationEngagementCharts({ data }: Props) {
 
             {/* Engagement Funnel */}
             <div>
-                <h4 className="text-xs text-muted mb-2">
+                <h4 className="text-xs font-medium text-muted uppercase tracking-wide mb-3">
                     Notification Funnel
                     <InfoTooltip text="From notifications received, to those you interacted with, to those that led to actual listening." />
                 </h4>
@@ -109,7 +108,7 @@ export default function NotificationEngagementCharts({ data }: Props) {
             {/* Notification Types */}
             {data.notificationTypes.length > 0 && (
                 <div>
-                    <h4 className="text-xs text-muted mb-2">
+                    <h4 className="text-xs font-medium text-muted uppercase tracking-wide mb-3">
                         Notification Campaigns
                         <InfoTooltip text="Breakdown by campaign ID. Each campaign represents a different type of notification from Spotify." />
                     </h4>

@@ -26,7 +26,7 @@ export default function HourDayBarCharts({ hourOfDay, dayOfWeek }: Props) {
     return (
         <div className="flex flex-col gap-6">
             <div>
-                <h4 className="text-xs text-muted mb-2">
+                <h4 className="text-xs font-medium text-muted uppercase tracking-wide mb-3">
                     By Hour of Day
                     <InfoTooltip text="Total hours listened at each hour of the day (in Eastern time). Reveals your daily listening rhythm." />
                 </h4>
@@ -50,7 +50,7 @@ export default function HourDayBarCharts({ hourOfDay, dayOfWeek }: Props) {
                 </ResponsiveContainer>
             </div>
             <div>
-                <h4 className="text-xs text-muted mb-2">
+                <h4 className="text-xs font-medium text-muted uppercase tracking-wide mb-3">
                     By Day of Week
                     <InfoTooltip text="Total hours listened on each day of the week, summed across all time." />
                 </h4>
