@@ -25,9 +25,50 @@ function truncate(s: string, max: number) {
     return s.length > max ? s.slice(0, max - 1) + "…" : s;
 }
 
+function formatWeekTick(week: string) {
+    if (!week) return "";
+    const [startRaw] = week.split("/");
+    const start = new Date(`${startRaw}T00:00:00`);
+    if (Number.isNaN(start.getTime())) return startRaw ?? week;
+
+    return start.toLocaleDateString(undefined, {
+        month: "short",
+        day: "numeric",
+    });
+}
+
+function formatWeekRangeLabel(week: string) {
+    if (!week) return "";
+    const [startRaw, endRaw] = week.split("/");
+    const start = new Date(`${startRaw}T00:00:00`);
+    const end = new Date(`${endRaw}T00:00:00`);
+
+    if (Number.isNaN(start.getTime()) || Number.isNaN(end.getTime())) {
+        return week;
+    }
+
+    const startMonthDay = start.toLocaleDateString(undefined, {
+        month: "short",
+        day: "numeric",
+    });
+    const endMonthDay = end.toLocaleDateString(undefined, {
+        month: "short",
+        day: "numeric",
+    });
+
+    if (start.getFullYear() === end.getFullYear()) {
+        return `${startMonthDay} – ${endMonthDay}, ${start.getFullYear()}`;
+    }
+
+    return `${startMonthDay}, ${start.getFullYear()} – ${endMonthDay}, ${end.getFullYear()}`;
+}
+
 export default function LibraryHealthCharts({ data }: Props) {
     const [interactionView, setInteractionView] = useState<"all" | "userOnly">(
         "all",
+    );
+    const [libraryTopView, setLibraryTopView] = useState<"artists" | "albums">(
+        "artists",
     );
 
     const emptyInteractions = {
@@ -36,7 +77,7 @@ export default function LibraryHealthCharts({ data }: Props) {
         netChange: 0,
         activeMonths: 0,
         interactionWindow: { start: null, end: null },
-        monthlyTrend: [],
+        weeklyTrend: [],
         kindBreakdown: [],
     };
 
@@ -57,10 +98,16 @@ export default function LibraryHealthCharts({ data }: Props) {
         { name: "Never played", value: data.librarySize - data.utilizedCount },
     ];
 
+    const neverPlayedExamples = data.neverPlayedExamples ?? [];
+    const artistConcentration = data.artistConcentration ?? [];
+    const albumConcentration = data.albumConcentration ?? [];
+    const topLibraryData =
+        libraryTopView === "artists" ? artistConcentration : albumConcentration;
+
     return (
         <div className="flex flex-col gap-6">
             {/* Overview stats */}
-            <div className="grid grid-cols-3 gap-3">
+            <div className="grid grid-cols-2 gap-3">
                 <div className="text-center">
                     <p className="text-xs text-muted">
                         Library Size
@@ -73,18 +120,8 @@ export default function LibraryHealthCharts({ data }: Props) {
                 </div>
                 <div className="text-center">
                     <p className="text-xs text-muted">
-                        Utilization
-                        <InfoTooltip text="Percentage of your saved tracks that appear at least once in your streaming history." />
-                    </p>
-                    <p className="text-2xl font-bold text-accent">
-                        {data.utilizationRate}%
-                    </p>
-                    <p className="text-xs text-muted">tracks played</p>
-                </div>
-                <div className="text-center">
-                    <p className="text-xs text-muted">
-                        Forgotten Saves
-                        <InfoTooltip text="Library tracks you haven't played in the last 12 months." />
+                        Not Played Recently
+                        <InfoTooltip text="Saved tracks you played before, but not in the last 12 months (different from never-played tracks)." />
                     </p>
                     <p className="text-2xl font-bold text-[#ff6b6b]">
                         {data.forgottenSaves.toLocaleString()}
@@ -97,43 +134,41 @@ export default function LibraryHealthCharts({ data }: Props) {
 
             {/* Library interactions */}
             <div className="flex flex-col gap-4">
-                <div className="flex items-center gap-2">
-                    {collectionInteractions.supportsUserOnly && (
-                        <>
-                            <button
-                                onClick={() => setInteractionView("all")}
-                                className={`px-3 py-1 rounded-full text-xs font-medium transition-colors ${
-                                    interactionView === "all"
-                                        ? "bg-accent text-black"
-                                        : "bg-card-border text-muted hover:text-foreground"
-                                }`}
-                            >
-                                All Activity
-                            </button>
-                            <button
-                                onClick={() => setInteractionView("userOnly")}
-                                className={`px-3 py-1 rounded-full text-xs font-medium transition-colors ${
-                                    interactionView === "userOnly"
-                                        ? "bg-accent text-black"
-                                        : "bg-card-border text-muted hover:text-foreground"
-                                }`}
-                            >
-                                My Adds Only
-                            </button>
-                        </>
-                    )}
-                    <InfoTooltip text="Tracks and other items you've added to or removed from your library over time. Other activity like listen-later and followed shows is summarized separately." />
-                </div>
+                {collectionInteractions.supportsUserOnly && (
+                    <div className="flex items-center gap-2">
+                        <button
+                            onClick={() => setInteractionView("all")}
+                            className={`px-3 py-1 rounded-full text-xs font-medium transition-colors ${
+                                interactionView === "all"
+                                    ? "bg-accent text-black"
+                                    : "bg-card-border text-muted hover:text-foreground"
+                            }`}
+                        >
+                            All Activity
+                        </button>
+                        <button
+                            onClick={() => setInteractionView("userOnly")}
+                            className={`px-3 py-1 rounded-full text-xs font-medium transition-colors ${
+                                interactionView === "userOnly"
+                                    ? "bg-accent text-black"
+                                    : "bg-card-border text-muted hover:text-foreground"
+                            }`}
+                        >
+                            My Adds Only
+                        </button>
+                        <InfoTooltip text="Tracks and other items you've added to or removed from your library over time. Other activity like listen-later and followed shows is summarized separately." />
+                    </div>
+                )}
 
-                {activeInteractions.monthlyTrend.length > 0 && (
+                {activeInteractions.weeklyTrend.length > 0 && (
                     <div>
                         <h4 className="text-xs text-muted mb-2">
                             Library Adds & Removes Over Time
-                            <InfoTooltip text="How many items you added to and removed from your library each month." />
+                            <InfoTooltip text="How many items you added to and removed from your library each week." />
                         </h4>
                         <ResponsiveContainer width="100%" height={220}>
                             <LineChart
-                                data={activeInteractions.monthlyTrend}
+                                data={activeInteractions.weeklyTrend}
                                 margin={{
                                     top: 5,
                                     right: 20,
@@ -141,7 +176,14 @@ export default function LibraryHealthCharts({ data }: Props) {
                                     left: 0,
                                 }}
                             >
-                                <XAxis dataKey="month" fontSize={10} />
+                                <XAxis
+                                    dataKey="week"
+                                    fontSize={10}
+                                    tickFormatter={(value: string) =>
+                                        formatWeekTick(value)
+                                    }
+                                    minTickGap={24}
+                                />
                                 <YAxis fontSize={10} />
                                 <Tooltip
                                     contentStyle={{
@@ -150,6 +192,13 @@ export default function LibraryHealthCharts({ data }: Props) {
                                         borderRadius: 8,
                                         fontSize: 12,
                                     }}
+                                    labelFormatter={(label) =>
+                                        formatWeekRangeLabel(
+                                            typeof label === "string"
+                                                ? label
+                                                : String(label ?? ""),
+                                        )
+                                    }
                                 />
                                 <Line
                                     type="monotone"
@@ -222,8 +271,8 @@ export default function LibraryHealthCharts({ data }: Props) {
             {/* Utilization donut */}
             <div>
                 <h4 className="text-xs text-muted mb-2 text-center">
-                    Library Utilization
-                    <InfoTooltip text="Breakdown of saved tracks you've actually listened to vs. tracks you've never played." />
+                    Library Usage Breakdown
+                    <InfoTooltip text="Breakdown of saved tracks you've listened to at least once vs. tracks you've never played." />
                 </h4>
                 <ResponsiveContainer width="100%" height={220}>
                     <PieChart>
@@ -258,6 +307,43 @@ export default function LibraryHealthCharts({ data }: Props) {
                         />
                     </PieChart>
                 </ResponsiveContainer>
+                <div className="grid grid-cols-2 gap-3 mt-2 text-center">
+                    <div>
+                        <p className="text-xs text-muted">Utilization</p>
+                        <p className="text-sm font-semibold text-accent">
+                            {data.utilizationRate}% listened
+                        </p>
+                    </div>
+                    <div>
+                        <p className="text-xs text-muted">Never Played</p>
+                        <p className="text-sm font-semibold text-[#ff6b6b]">
+                            {(data.librarySize - data.utilizedCount).toLocaleString()} tracks
+                        </p>
+                    </div>
+                </div>
+                {neverPlayedExamples.length > 0 && (
+                    <div className="mt-3">
+                        <h4 className="text-xs text-muted mb-2">
+                            Sample Never-Played Tracks
+                            <InfoTooltip text="Examples of tracks in your library that never appear in your streaming history." />
+                        </h4>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-1">
+                            {neverPlayedExamples.map((t, i) => (
+                                <div
+                                    key={i}
+                                    className="text-xs flex items-center gap-2 py-1 px-2 rounded bg-[#1a1a1a]"
+                                >
+                                    <span className="text-[#e0e0e0]">
+                                        {truncate(t.name, 30)}
+                                    </span>
+                                    <span className="text-muted">
+                                        {truncate(t.artist, 20)}
+                                    </span>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                )}
             </div>
 
             {/* Unsaved Favorites */}
@@ -319,19 +405,41 @@ export default function LibraryHealthCharts({ data }: Props) {
                 </div>
             )}
 
-            {/* Library artist concentration */}
-            {data.artistConcentration.length > 0 && (
+            {/* Library concentration */}
+            {(artistConcentration.length > 0 || albumConcentration.length > 0) && (
                 <div>
                     <h4 className="text-xs text-muted mb-2">
-                        Top Artists in Your Library
-                        <InfoTooltip text="Artists with the most saved tracks in your Liked Songs." />
+                        Top in Your Library
+                        <InfoTooltip text="See which artists or albums have the most saved tracks in your library." />
                     </h4>
+                    <div className="flex gap-2 mb-3">
+                        <button
+                            onClick={() => setLibraryTopView("artists")}
+                            className={`px-3 py-1 rounded-full text-xs font-medium transition-colors ${
+                                libraryTopView === "artists"
+                                    ? "bg-accent text-black"
+                                    : "bg-card-border text-muted hover:text-foreground"
+                            }`}
+                        >
+                            Artists
+                        </button>
+                        <button
+                            onClick={() => setLibraryTopView("albums")}
+                            className={`px-3 py-1 rounded-full text-xs font-medium transition-colors ${
+                                libraryTopView === "albums"
+                                    ? "bg-accent text-black"
+                                    : "bg-card-border text-muted hover:text-foreground"
+                            }`}
+                        >
+                            Albums
+                        </button>
+                    </div>
                     <ResponsiveContainer
                         width="100%"
-                        height={data.artistConcentration.length * 28}
+                        height={Math.max(220, topLibraryData.length * 28)}
                     >
                         <BarChart
-                            data={data.artistConcentration}
+                            data={topLibraryData}
                             layout="vertical"
                             margin={{ left: 10 }}
                         >
@@ -339,18 +447,31 @@ export default function LibraryHealthCharts({ data }: Props) {
                             <YAxis
                                 type="category"
                                 dataKey="name"
-                                width={160}
+                                width={200}
                                 tick={{ fontSize: 10 }}
-                                tickFormatter={(v: string) => truncate(v, 22)}
+                                tickFormatter={(v: string) => truncate(v, 28)}
                             />
                             <Tooltip
-                                contentStyle={{
-                                    backgroundColor: "#1e1e1e",
-                                    border: "1px solid #2a2a2a",
-                                    borderRadius: 8,
-                                    fontSize: 12,
+                                content={({ active, payload }) => {
+                                    if (!active || !payload || !payload.length)
+                                        return null;
+                                    const row = payload[0].payload;
+                                    return (
+                                        <div className="bg-[#1e1e1e] border border-[#2a2a2a] rounded-lg px-3 py-2 text-sm">
+                                            <p className="font-medium text-[#e0e0e0]">
+                                                {row.name}
+                                            </p>
+                                            {row.artist && (
+                                                <p className="text-[#888]">
+                                                    {row.artist}
+                                                </p>
+                                            )}
+                                            <p className="text-accent font-semibold mt-1">
+                                                {row.count.toLocaleString()} saved tracks
+                                            </p>
+                                        </div>
+                                    );
                                 }}
-                                formatter={(value) => [value, "Saved tracks"]}
                             />
                             <Bar
                                 dataKey="count"

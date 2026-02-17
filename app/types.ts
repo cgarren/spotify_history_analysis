@@ -152,7 +152,7 @@ export interface PlaylistInsights {
 
 // Section 2: Search Behavior
 export interface SearchOverTime {
-  month: string;
+  week: string;
   count: number;
 }
 
@@ -175,27 +175,30 @@ export interface SearchBehavior {
   hourOfDay: SearchHourOfDay[];
 }
 
-// Section 3: Wrapped 2024 Spotlight
-export interface WrappedEra {
-  peakMonth: string;
-  peakMonthIndex: number;
-  genre: string;
-  mood: string;
-  descriptor: string;
-  color: string;
-  tracks: string[];
+// Section 3: Wrapped Spotlight (generic — adapts to any year)
+export interface WrappedHighlight {
+  label: string;
+  value: string;
 }
 
-export interface Wrapped2024 {
-  totalHours: number;
-  topPercentGlobally: number;
-  mostListenedDay: string;
-  mostListenedDayMinutes: number;
-  distinctTracks: number;
-  uniqueArtists: number;
-  topTrackPlayCount: number;
-  topTrackFirstPlayed: string;
-  eras: WrappedEra[];
+export interface WrappedSectionItem {
+  label: string;
+  value: string;
+  detail?: string;
+  color?: string;
+  tracks?: string[];
+}
+
+export interface WrappedSection {
+  title: string;
+  type: "callout" | "era-cards" | "stat-list" | "archive";
+  items: WrappedSectionItem[];
+}
+
+export interface WrappedSpotlight {
+  year: number;
+  highlights: WrappedHighlight[];
+  sections: WrappedSection[];
 }
 
 // Section 4: Library Health (cross-dataset)
@@ -205,13 +208,25 @@ export interface UnsavedFavorite {
   hours: number;
 }
 
+export interface LibraryTrackExample {
+  name: string;
+  artist: string;
+}
+
 export interface LibraryArtistConcentration {
   name: string;
   count: number;
+  artist?: string;
 }
 
-export interface LibraryInteractionMonth {
-  month: string;
+export interface LibraryAlbumConcentration {
+  name: string;
+  count: number;
+  artist?: string;
+}
+
+export interface LibraryInteractionWeek {
+  week: string;
   adds: number;
   removes: number;
   net: number;
@@ -235,7 +250,7 @@ export interface LibraryCollectionInteractionsMetrics {
   netChange: number;
   activeMonths: number;
   interactionWindow: LibraryInteractionWindow;
-  monthlyTrend: LibraryInteractionMonth[];
+  weeklyTrend: LibraryInteractionWeek[];
   kindBreakdown: LibraryInteractionKind[];
 }
 
@@ -249,10 +264,12 @@ export interface LibraryHealth {
   librarySize: number;
   utilizationRate: number;
   utilizedCount: number;
+  neverPlayedExamples: LibraryTrackExample[];
   unsavedFavorites: UnsavedFavorite[];
   forgottenSaves: number;
   forgottenSavesPct: number;
-  artistConcentration: LibraryArtistConcentration[];
+  artistConcentration?: LibraryArtistConcentration[];
+  albumConcentration?: LibraryAlbumConcentration[];
   collectionInteractions: LibraryCollectionInteractions;
 }
 
@@ -507,6 +524,34 @@ export interface PushNotifications {
 }
 
 // ---------------------------------------------------------------------------
+// Explicit Content
+// ---------------------------------------------------------------------------
+export interface ExplicitSplit {
+  total: number;
+  explicit: number;
+  clean: number;
+  explicitPct: number;
+}
+
+export interface ExplicitArtist {
+  name: string;
+  saves: number;
+}
+
+export interface LibraryAddsTrend {
+  year: number;
+  explicitPct: number;
+  explicitAdds: number;
+  totalAdds: number;
+}
+
+export interface ExplicitContent {
+  library: ExplicitSplit;
+  libraryAddsTrend: LibraryAddsTrend[];
+  topExplicitArtists: ExplicitArtist[];
+}
+
+// ---------------------------------------------------------------------------
 // Main Stats interface
 // ---------------------------------------------------------------------------
 export interface Stats {
@@ -535,7 +580,8 @@ export interface Stats {
   // Account Data sections
   playlistInsights: PlaylistInsights;
   searchBehavior: SearchBehavior;
-  wrapped2024: Wrapped2024;
+  wrappedSpotlight: WrappedSpotlight;
+  explicitContent: ExplicitContent;
   libraryHealth: LibraryHealth;
   playlistStreamOverlap: PlaylistStreamOverlap;
   searchListenPipeline: SearchListenPipeline;

@@ -16,6 +16,7 @@ import DiscoveryChart from "./components/charts/DiscoveryChart";
 import PlaylistInsightsCharts from "./components/charts/PlaylistInsightsCharts";
 import SearchBehaviorCharts from "./components/charts/SearchBehaviorCharts";
 import WrappedSpotlightCharts from "./components/charts/WrappedSpotlightCharts";
+import ExplicitContentCharts from "./components/charts/ExplicitContentCharts";
 import LibraryHealthCharts from "./components/charts/LibraryHealthCharts";
 import PlaylistStreamOverlapCharts from "./components/charts/PlaylistStreamOverlapCharts";
 import SearchListenPipelineCharts from "./components/charts/SearchListenPipelineCharts";
@@ -218,9 +219,9 @@ export default function Home() {
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                {/* Wrapped 2024 Spotlight - full width */}
-                <Card title="2024 Wrapped Spotlight" className="lg:col-span-2">
-                    <WrappedSpotlightCharts data={stats.wrapped2024} />
+                {/* Wrapped Spotlight - full width */}
+                <Card title={`${stats.wrappedSpotlight.year} Wrapped Spotlight`} className="lg:col-span-2">
+                    <WrappedSpotlightCharts data={stats.wrappedSpotlight} />
                 </Card>
 
                 {/* Playlist Insights - full width */}
@@ -236,6 +237,9 @@ export default function Home() {
                 {/* Library Insights */}
                 <Card title="Library Insights">
                     <LibraryHealthCharts data={stats.libraryHealth} />
+                    <hr className="border-[#2a2a2a] my-6" />
+                    <h3 className="text-sm font-semibold text-[#e0e0e0] mb-4">Explicit Content</h3>
+                    <ExplicitContentCharts data={stats.explicitContent} />
                 </Card>
 
                 {/* Library/Playlists x Streaming Overlap - full width */}

@@ -9,6 +9,7 @@ Run from the history_analysis_web/ directory:
 import glob
 import json
 import os
+import re
 from collections import defaultdict
 
 import pandas as pd
@@ -493,7 +494,7 @@ search_df = pd.DataFrame(search_records)
 if len(search_df) > 0:
     search_df["ts"] = pd.to_datetime(search_df["ts"], utc=True)
     search_df["ts"] = search_df["ts"].dt.tz_convert("US/Eastern")
-    search_df["month"] = search_df["ts"].dt.to_period("M").astype(str)
+    search_df["week"] = search_df["ts"].dt.to_period("W").astype(str)
     search_df["hour_of_day"] = search_df["ts"].dt.hour
     search_df["date"] = search_df["ts"].dt.date
 
@@ -505,12 +506,12 @@ if len(search_df) > 0:
     date_range_days = (meaningful["date"].max() - meaningful["date"].min()).days + 1
     avg_searches_per_day = round(total_searches / max(date_range_days, 1), 1)
 
-    # Search activity over time (monthly)
-    search_monthly = meaningful.groupby("month").size().reset_index(name="count")
-    search_monthly = search_monthly.sort_values("month")
+    # Search activity over time (weekly)
+    search_weekly = meaningful.groupby("week").size().reset_index(name="count")
+    search_weekly = search_weekly.sort_values("week")
     search_over_time = [
-        {"month": r["month"], "count": int(r["count"])}
-        for _, r in search_monthly.iterrows()
+        {"week": r["week"], "count": int(r["count"])}
+        for _, r in search_weekly.iterrows()
     ]
 
     # Top search queries
@@ -541,57 +542,181 @@ else:
     }
 
 # ---------------------------------------------------------------------------
-# 3c. Wrapped 2024 Spotlight
+# 3c. Wrapped Spotlight (auto-detect year)
 # ---------------------------------------------------------------------------
-print("Computing Wrapped 2024 spotlight …")
-wrapped_path = os.path.join(ACCOUNT_DIR, "Wrapped2024.json")
-with open(wrapped_path, "r") as fh:
-    wrapped = json.load(fh)
+print("Computing Wrapped spotlight …")
+wrapped_files = sorted(glob.glob(os.path.join(ACCOUNT_DIR, "Wrapped*.json")))
+if wrapped_files:
+    wrapped_path = wrapped_files[-1]  # latest year
+    wrapped_year_match = re.search(r"Wrapped(\d{4})", os.path.basename(wrapped_path))
+    wrapped_year = int(wrapped_year_match.group(1)) if wrapped_year_match else 0
+    print(f"  Found {os.path.basename(wrapped_path)}")
+    with open(wrapped_path, "r") as fh:
+        wrapped = json.load(fh)
 
-yearly_metrics = wrapped.get("yearlyMetrics", {})
-top_artists_w = wrapped.get("topArtists", {})
-top_tracks_w = wrapped.get("topTracks", {})
-music_evolution = wrapped.get("musicEvolution", {})
+    yearly_metrics = wrapped.get("yearlyMetrics", {})
+    top_artists_w = wrapped.get("topArtists", {})
+    top_tracks_w = wrapped.get("topTracks", {})
+    party = wrapped.get("party", {})
+    clubs = wrapped.get("clubs", {})
+    listening_age = wrapped.get("listeningAge", {})
+    music_evolution = wrapped.get("musicEvolution", {})
+    archive_reports = wrapped.get("archiveReports", {})
+    top_albums_w = wrapped.get("topAlbums", {})
+    top_genres_w = wrapped.get("topGenres", {})
 
-total_2024_hours = round(yearly_metrics.get("totalMsListened", 0) / 3_600_000, 1)
-top_percent = round(100 - yearly_metrics.get("percentGreaterThanWorldwideUsers", 0), 1)
-most_listened_day = yearly_metrics.get("mostListenedDay", "")
-most_listened_day_mins = round(yearly_metrics.get("mostListenedDayMinutes", 0), 1)
-distinct_tracks = top_tracks_w.get("distinctTracksPlayed", 0)
-top_track_play_count = top_tracks_w.get("topTrackPlayCount", 0)
-top_track_first_played = top_tracks_w.get("topTrackFirstPlayedDate", "")
-num_unique_artists_2024 = top_artists_w.get("numUniqueArtists", 0)
+    # --- Build highlights (hero KPI stats) ---
+    highlights = []
 
-# Build eras
-MONTH_NAMES = ["Jan", "Feb", "Mar", "Apr", "May", "Jun",
-               "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
-eras = []
-for era in music_evolution.get("eras", []):
-    peak_month_idx = era.get("peakMonth", 0)
-    peak_month_name = MONTH_NAMES[peak_month_idx] if 0 <= peak_month_idx < 12 else str(peak_month_idx)
-    tracks = [t.get("trackName", "") for t in era.get("tracks", [])]
-    eras.append({
-        "peakMonth": peak_month_name,
-        "peakMonthIndex": peak_month_idx,
-        "genre": era.get("genre", ""),
-        "mood": era.get("mood", ""),
-        "descriptor": era.get("descriptor", ""),
-        "color": era.get("color", ""),
-        "tracks": tracks,
-    })
+    total_ms = yearly_metrics.get("totalMsListened", 0)
+    if total_ms:
+        total_hours = round(total_ms / 3_600_000, 1)
+        highlights.append({"label": "Total Hours", "value": f"{total_hours:,.1f}"})
+    elif party.get("totalNumListeningMinutes"):
+        total_hours = round(party["totalNumListeningMinutes"] / 60, 1)
+        highlights.append({"label": "Total Hours", "value": f"{total_hours:,.1f}"})
 
-stats["wrapped2024"] = {
-    "totalHours": total_2024_hours,
-    "topPercentGlobally": top_percent,
-    "mostListenedDay": most_listened_day,
-    "mostListenedDayMinutes": most_listened_day_mins,
-    "distinctTracks": distinct_tracks,
-    "uniqueArtists": num_unique_artists_2024,
-    "topTrackPlayCount": top_track_play_count,
-    "topTrackFirstPlayed": top_track_first_played,
-    "eras": eras,
-}
-print(f"  2024: {total_2024_hours} hours, top {top_percent}% globally, {len(eras)} eras")
+    pct_greater = yearly_metrics.get("percentGreaterThanWorldwideUsers")
+    if pct_greater is not None:
+        top_pct = round(100 - pct_greater, 1)
+        highlights.append({"label": "Global Ranking", "value": f"Top {top_pct}%"})
+
+    # Unique tracks — field name differs between years
+    distinct = top_tracks_w.get("distinctTracksPlayed") or top_tracks_w.get("numUniqueTracks")
+    if distinct:
+        highlights.append({"label": "Distinct Tracks", "value": f"{int(distinct):,}"})
+
+    unique_artists = top_artists_w.get("numUniqueArtists")
+    if unique_artists:
+        highlights.append({"label": "Unique Artists", "value": f"{int(unique_artists):,}"})
+
+    # Top track play count — direct field (2024) or derive from array (2025)
+    top_play_count = top_tracks_w.get("topTrackPlayCount")
+    if not top_play_count:
+        top_tracks_list = top_tracks_w.get("topTracks", [])
+        if top_tracks_list and isinstance(top_tracks_list[0], dict):
+            top_play_count = top_tracks_list[0].get("count")
+    if top_play_count:
+        highlights.append({"label": "#1 Track Plays", "value": str(int(top_play_count))})
+
+    # Listening days
+    listening_days = party.get("totalNumListeningDays")
+    if listening_days:
+        highlights.append({"label": "Listening Days", "value": str(int(listening_days))})
+
+    # Listening streak
+    streak = party.get("streakNumListeningDays")
+    if streak:
+        highlights.append({"label": "Longest Streak", "value": f"{int(streak)} days"})
+
+    # Artists discovered
+    discovered = party.get("numArtistsDiscovered")
+    if discovered:
+        highlights.append({"label": "Artists Discovered", "value": f"{int(discovered):,}"})
+
+    # Genres explored
+    total_genres = top_genres_w.get("totalNumGenres")
+    if total_genres:
+        highlights.append({"label": "Genres Explored", "value": f"{int(total_genres):,}"})
+
+    # Albums completed
+    completed_albums = top_albums_w.get("numCompletedAlbums")
+    if completed_albums:
+        highlights.append({"label": "Albums Completed", "value": str(int(completed_albums))})
+
+    # --- Build sections (richer content blocks) ---
+    sections = []
+
+    # Peak listening day (from yearlyMetrics or archiveReports)
+    most_listened_day = yearly_metrics.get("mostListenedDay", "")
+    most_listened_day_mins = yearly_metrics.get("mostListenedDayMinutes", 0)
+    if most_listened_day:
+        sections.append({
+            "title": "Biggest Listening Day",
+            "type": "callout",
+            "items": [{
+                "label": most_listened_day,
+                "value": f"{round(most_listened_day_mins)} min ({round(most_listened_day_mins / 60, 1)} hrs)",
+            }],
+        })
+
+    # Listening personality
+    personality_items = []
+    if clubs.get("userClub"):
+        club_name = clubs["userClub"].replace("_", " ").title()
+        personality_items.append({"label": "Listening Club", "value": club_name})
+    if clubs.get("role"):
+        personality_items.append({"label": "Role", "value": clubs["role"].title()})
+    if listening_age.get("listeningAge") is not None:
+        decade_phase = listening_age.get("decadePhase", "")
+        start_year = listening_age.get("windowStartYear", "")
+        age_detail = f"{decade_phase} {start_year}s" if decade_phase and start_year else ""
+        personality_items.append({
+            "label": "Music Age",
+            "value": str(listening_age["listeningAge"]),
+            "detail": age_detail,
+        })
+    night_pct = party.get("percentListenedNight")
+    if night_pct is not None:
+        personality_items.append({"label": "Night Listening", "value": f"{round(night_pct, 1)}%"})
+    explicit_pct = party.get("percentListenedExplicit")
+    if explicit_pct is not None:
+        personality_items.append({"label": "Explicit Content", "value": f"{round(explicit_pct, 1)}%"})
+    if personality_items:
+        sections.append({"title": "Your Listening Personality", "type": "stat-list", "items": personality_items})
+
+    # Music evolution eras (2024 style)
+    MONTH_NAMES = ["Jan", "Feb", "Mar", "Apr", "May", "Jun",
+                   "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
+    era_items = []
+    for era in music_evolution.get("eras", []):
+        peak_month_idx = era.get("peakMonth", 0)
+        peak_month_name = MONTH_NAMES[peak_month_idx] if 0 <= peak_month_idx < 12 else str(peak_month_idx)
+        track_names = [t.get("trackName", "") for t in era.get("tracks", [])]
+        era_items.append({
+            "label": peak_month_name,
+            "value": era.get("genre", ""),
+            "detail": f"{era.get('mood', '')} · {era.get('descriptor', '')}",
+            "color": era.get("color", ""),
+            "tracks": track_names,
+        })
+    if era_items:
+        sections.append({"title": "Your Music Evolution", "type": "era-cards", "items": era_items})
+
+    # Archive reports / notable days (2025 style)
+    report_items = []
+    for report in archive_reports.get("archiveReports", []):
+        raw_date = report.get("columnQualifier", "")
+        if len(raw_date) == 8:
+            formatted_date = f"{raw_date[:4]}-{raw_date[4:6]}-{raw_date[6:]}"
+        else:
+            formatted_date = raw_date
+        report_items.append({
+            "label": report.get("title", ""),
+            "value": formatted_date,
+            "detail": report.get("description", ""),
+        })
+    if report_items:
+        sections.append({"title": "Notable Days", "type": "archive", "items": report_items})
+
+    # First played date for top track (2024)
+    top_track_first = top_tracks_w.get("topTrackFirstPlayedDate")
+    if top_track_first:
+        sections.append({
+            "title": "#1 Track",
+            "type": "callout",
+            "items": [{"label": f"First played {top_track_first}", "value": f"{top_play_count} plays"}],
+        })
+
+    stats["wrappedSpotlight"] = {
+        "year": wrapped_year,
+        "highlights": highlights,
+        "sections": sections,
+    }
+    print(f"  {wrapped_year}: {len(highlights)} highlights, {len(sections)} sections")
+else:
+    stats["wrappedSpotlight"] = {"year": 0, "highlights": [], "sections": []}
+    print("  No Wrapped file found")
 
 # ---------------------------------------------------------------------------
 # 3d. Library Health (cross-dataset)
@@ -608,13 +733,49 @@ library_size = len(library_tracks)
 # Set of all URIs ever streamed
 streamed_uris = set(df["spotify_track_uri"].dropna().unique())
 
+# Build music-only frame once for URI + title/artist matching
+music_with_uri = df[(df["content_type"] == "music") & df["spotify_track_uri"].notna()].copy()
+
 # Library utilization: how many saved tracks appear in streaming history
-utilized_uris = library_uris & streamed_uris
-utilization_rate = round(len(utilized_uris) / max(library_size, 1) * 100, 1)
+streamed_title_artist = set(
+    zip(
+        music_with_uri["master_metadata_track_name"].fillna("").str.strip().str.lower(),
+        music_with_uri["master_metadata_album_artist_name"].fillna("").str.strip().str.lower(),
+    )
+)
+
+library_rows = []
+for t in library_tracks:
+    uri = t.get("uri", "")
+    name = (t.get("track") or "").strip()
+    artist = (t.get("artist") or "").strip()
+    key = (name.lower(), artist.lower()) if name and artist else ("", "")
+    library_rows.append({"uri": uri, "name": name, "artist": artist, "key": key})
+
+utilized_library_rows = [
+    row
+    for row in library_rows
+    if (row["uri"] in streamed_uris)
+    or (row["key"] != ("", "") and row["key"] in streamed_title_artist)
+]
+
+utilized_count = len(utilized_library_rows)
+utilization_rate = round(utilized_count / max(library_size, 1) * 100, 1)
+
+# Examples of saved tracks never played in streaming history
+# (after URI + title/artist fallback matching)
+never_played_examples = []
+for row in library_rows:
+    is_utilized = (row["uri"] in streamed_uris) or (
+        row["key"] != ("", "") and row["key"] in streamed_title_artist
+    )
+    if not is_utilized and row["name"] and row["artist"]:
+        never_played_examples.append({"name": row["name"], "artist": row["artist"]})
+    if len(never_played_examples) >= 8:
+        break
 
 # "Unsaved Favorites": top played tracks NOT in library
 # Deduplicate by (title, artist) so singles and album versions count as one
-music_with_uri = df[(df["content_type"] == "music") & df["spotify_track_uri"].notna()].copy()
 track_hours = (
     music_with_uri.groupby(["spotify_track_uri", "master_metadata_track_name", "master_metadata_album_artist_name"])
     ["hours"].sum().reset_index()
@@ -652,10 +813,23 @@ unsaved_favorites = [
 # "Forgotten Saves": library tracks not played in last 12 months
 last_date = df["ts"].max()
 twelve_months_ago = last_date - pd.DateOffset(months=12)
-recent_uris = set(
-    df[df["ts"] >= twelve_months_ago]["spotify_track_uri"].dropna().unique()
+recent_music = df[(df["content_type"] == "music") & (df["ts"] >= twelve_months_ago)]
+recent_uris = set(recent_music["spotify_track_uri"].dropna().unique())
+recent_title_artist = set(
+    zip(
+        recent_music["master_metadata_track_name"].fillna("").str.strip().str.lower(),
+        recent_music["master_metadata_album_artist_name"].fillna("").str.strip().str.lower(),
+    )
 )
-forgotten_count = len(library_uris - recent_uris)
+
+forgotten_count = sum(
+    1
+    for row in library_rows
+    if not (
+        (row["uri"] in recent_uris)
+        or (row["key"] != ("", "") and row["key"] in recent_title_artist)
+    )
+)
 forgotten_pct = round(forgotten_count / max(library_size, 1) * 100, 1)
 
 # Library artist concentration
@@ -667,6 +841,19 @@ for t in library_tracks:
 top_lib_artists = sorted(lib_artist_counts.items(), key=lambda x: x[1], reverse=True)[:10]
 library_artist_concentration = [
     {"name": a, "count": c} for a, c in top_lib_artists
+]
+
+# Library album concentration (album + artist to avoid ambiguous titles)
+lib_album_counts: dict[tuple[str, str], int] = defaultdict(int)
+for t in library_tracks:
+    album = t.get("album", "Unknown")
+    artist = t.get("artist", "Unknown")
+    if album:
+        lib_album_counts[(album, artist)] += 1
+top_lib_albums = sorted(lib_album_counts.items(), key=lambda x: x[1], reverse=True)[:10]
+library_album_concentration = [
+    {"name": album, "artist": artist, "count": count}
+    for (album, artist), count in top_lib_albums
 ]
 
 # -----------------------------------------------------------------------
@@ -697,7 +884,7 @@ def empty_collection_interaction_metrics() -> dict:
         "netChange": 0,
         "activeMonths": 0,
         "interactionWindow": {"start": None, "end": None},
-        "monthlyTrend": [],
+        "weeklyTrend": [],
         "kindBreakdown": [],
     }
 
@@ -711,13 +898,13 @@ def compute_collection_interaction_metrics(events_df: pd.DataFrame) -> dict:
     total_adds = int(len(adds))
     total_removes = int(len(removes))
 
-    monthly_adds = adds.groupby("month").size().reset_index(name="adds") if len(adds) > 0 else pd.DataFrame(columns=["month", "adds"])
-    monthly_removes = removes.groupby("month").size().reset_index(name="removes") if len(removes) > 0 else pd.DataFrame(columns=["month", "removes"])
-    monthly = pd.merge(monthly_adds, monthly_removes, on="month", how="outer").fillna(0)
-    monthly = monthly.sort_values("month")
+    monthly_adds = adds.groupby("week").size().reset_index(name="adds") if len(adds) > 0 else pd.DataFrame(columns=["week", "adds"])
+    monthly_removes = removes.groupby("week").size().reset_index(name="removes") if len(removes) > 0 else pd.DataFrame(columns=["week", "removes"])
+    monthly = pd.merge(monthly_adds, monthly_removes, on="week", how="outer").fillna(0)
+    monthly = monthly.sort_values("week")
     monthly_trend = [
         {
-            "month": r["month"],
+            "week": r["week"],
             "adds": int(r["adds"]),
             "removes": int(r["removes"]),
             "net": int(r["adds"] - r["removes"]),
@@ -743,12 +930,12 @@ def compute_collection_interaction_metrics(events_df: pd.DataFrame) -> dict:
         "totalAdds": total_adds,
         "totalRemoves": total_removes,
         "netChange": int(total_adds - total_removes),
-        "activeMonths": int(monthly["month"].nunique()) if len(monthly) > 0 else 0,
+        "activeMonths": int(monthly["week"].nunique()) if len(monthly) > 0 else 0,
         "interactionWindow": {
             "start": str(events_df["ts"].min().date()) if len(events_df) > 0 else None,
             "end": str(events_df["ts"].max().date()) if len(events_df) > 0 else None,
         },
-        "monthlyTrend": monthly_trend,
+        "weeklyTrend": monthly_trend,
         "kindBreakdown": kind_breakdown,
     }
 
@@ -766,16 +953,17 @@ def load_collection_log(filename: str) -> pd.DataFrame:
 
 def prepare_collection_events(raw_df: pd.DataFrame, event_type: str) -> pd.DataFrame:
     if len(raw_df) == 0 or "timestamp_utc" not in raw_df.columns:
-        return pd.DataFrame(columns=["ts", "month", "set", "uriKind", "eventType", "isUserOnly"])
+        return pd.DataFrame(columns=["ts", "month", "week", "set", "uriKind", "eventType", "isUserOnly"])
 
     out = raw_df.copy()
     out["ts"] = pd.to_datetime(out["timestamp_utc"], format="ISO8601", utc=True, errors="coerce")
     out = out[out["ts"].notna()].copy()
     if len(out) == 0:
-        return pd.DataFrame(columns=["ts", "month", "set", "uriKind", "eventType", "isUserOnly"])
+        return pd.DataFrame(columns=["ts", "month", "week", "set", "uriKind", "eventType", "isUserOnly"])
 
     out["ts"] = out["ts"].dt.tz_convert("US/Eastern")
     out["month"] = out["ts"].dt.to_period("M").astype(str)
+    out["week"] = out["ts"].dt.to_period("W").astype(str)
     out["set"] = out.get("message_set", "unknown").fillna("unknown").astype(str)
     out["uriKind"] = out.get("message_item_uri", "").fillna("").astype(str).apply(detect_uri_kind)
     out["eventType"] = event_type
@@ -784,7 +972,7 @@ def prepare_collection_events(raw_df: pd.DataFrame, event_type: str) -> pd.DataF
     else:
         out["isUserOnly"] = False
 
-    return out[["ts", "month", "set", "uriKind", "eventType", "isUserOnly"]]
+    return out[["ts", "month", "week", "set", "uriKind", "eventType", "isUserOnly"]]
 
 
 added_collection_raw = load_collection_log("AddedToCollection.json")
@@ -812,11 +1000,13 @@ collection_user_metrics = (
 stats["libraryHealth"] = {
     "librarySize": library_size,
     "utilizationRate": utilization_rate,
-    "utilizedCount": len(utilized_uris),
+    "utilizedCount": utilized_count,
+    "neverPlayedExamples": never_played_examples,
     "unsavedFavorites": unsaved_favorites,
     "forgottenSaves": forgotten_count,
     "forgottenSavesPct": forgotten_pct,
     "artistConcentration": library_artist_concentration,
+    "albumConcentration": library_album_concentration,
     "collectionInteractions": {
         "supportsUserOnly": bool(supports_user_only),
         "all": collection_all_metrics,
@@ -827,6 +1017,85 @@ print(
     f"  Library: {library_size} tracks, {utilization_rate}% utilized, {forgotten_count} forgotten | "
     f"collection interactions: +{collection_all_metrics['totalAdds']} / -{collection_all_metrics['totalRemoves']}"
 )
+
+# ---------------------------------------------------------------------------
+# 3d½. Explicit Content Analysis (saved_tracks.json x streaming)
+# ---------------------------------------------------------------------------
+print("Computing explicit content …")
+
+saved_tracks_path = os.path.join("..", "saved_tracks.json")
+if os.path.exists(saved_tracks_path):
+    with open(saved_tracks_path, "r") as fh:
+        saved_tracks_data = json.load(fh)
+    saved_items = saved_tracks_data.get("tracks", [])
+
+    # URI → explicit flag + artist
+    uri_is_explicit: dict[str, bool] = {}
+    uri_primary_artist: dict[str, str] = {}
+    for item in saved_items:
+        tr = item.get("track", {})
+        uri = tr.get("uri")
+        if uri:
+            uri_is_explicit[uri] = bool(tr.get("explicit", False))
+            artists = tr.get("artists", [])
+            if artists:
+                uri_primary_artist[uri] = artists[0].get("name", "Unknown")
+
+    # ---- Library split ----
+    lib_total = len(uri_is_explicit)
+    lib_explicit = sum(1 for v in uri_is_explicit.values() if v)
+    lib_clean = lib_total - lib_explicit
+    lib_explicit_pct = round(lib_explicit / max(lib_total, 1) * 100, 1)
+
+    # ---- Top explicit artists (by library save count) ----
+    artist_exp_saves: dict[str, int] = defaultdict(int)
+    for uri, is_exp in uri_is_explicit.items():
+        if is_exp and uri in uri_primary_artist:
+            artist_exp_saves[uri_primary_artist[uri]] += 1
+    top_explicit_artists = [
+        {"name": a, "saves": c}
+        for a, c in sorted(artist_exp_saves.items(), key=lambda x: x[1], reverse=True)[:10]
+    ]
+
+    # ---- Library adds explicit trend ----
+    adds_yearly_total: dict[int, int] = defaultdict(int)
+    adds_yearly_explicit: dict[int, int] = defaultdict(int)
+    for item in saved_items:
+        added = item.get("added_at", "")[:4]
+        if added and added.isdigit():
+            yr = int(added)
+            adds_yearly_total[yr] += 1
+            if item["track"].get("explicit", False):
+                adds_yearly_explicit[yr] += 1
+    library_adds_trend = [
+        {
+            "year": yr,
+            "explicitPct": round(adds_yearly_explicit.get(yr, 0) / max(adds_yearly_total[yr], 1) * 100, 1),
+            "explicitAdds": adds_yearly_explicit.get(yr, 0),
+            "totalAdds": adds_yearly_total[yr],
+        }
+        for yr in sorted(adds_yearly_total)
+    ]
+
+    stats["explicitContent"] = {
+        "library": {
+            "total": lib_total,
+            "explicit": lib_explicit,
+            "clean": lib_clean,
+            "explicitPct": lib_explicit_pct,
+        },
+        "libraryAddsTrend": library_adds_trend,
+        "topExplicitArtists": top_explicit_artists,
+    }
+    print(f"  Library: {lib_explicit_pct}% explicit ({lib_explicit}/{lib_total}) | "
+          f"{len(top_explicit_artists)} top explicit artists")
+else:
+    stats["explicitContent"] = {
+        "library": {"total": 0, "explicit": 0, "clean": 0, "explicitPct": 0},
+        "libraryAddsTrend": [],
+        "topExplicitArtists": [],
+    }
+    print("  saved_tracks.json not found – skipping explicit analysis")
 
 # ---------------------------------------------------------------------------
 # 3e. Playlist x Streaming Overlap (cross-dataset)
