@@ -185,7 +185,7 @@ export default function PlaylistCurationCharts({ data: rawData }: Props) {
             {/* Playlist Churn Over Time */}
             {data.churnOverTime.length > 0 && (
                 <div>
-                    <h4 className="text-xs text-muted mb-2">
+                    <h4 className="text-xs font-medium text-muted uppercase tracking-wide mb-3">
                         Playlist Churn Over Time
                         <InfoTooltip text="Weekly adds vs removes. Shows how actively you curate your playlists over time." />
                     </h4>
@@ -239,7 +239,7 @@ export default function PlaylistCurationCharts({ data: rawData }: Props) {
             {/* Curation Heatmap */}
             {data.curationHeatmap.length > 0 && (
                 <div>
-                    <h4 className="text-xs text-muted mb-2">
+                    <h4 className="text-xs font-medium text-muted uppercase tracking-wide mb-3">
                         Curation Hour Heatmap
                         <InfoTooltip text="When you curate playlists (add/remove tracks) by hour and day of week. Compare with the listening heatmap to see organizing vs listening time." />
                     </h4>
@@ -251,7 +251,7 @@ export default function PlaylistCurationCharts({ data: rawData }: Props) {
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 {/* Playlist Regret */}
                 <div className="bg-[#1a1a1a] rounded-lg p-4">
-                    <h4 className="text-xs text-muted mb-2">
+                    <h4 className="text-xs font-medium text-muted uppercase tracking-wide mb-3">
                         Playlist Regret Score
                         <InfoTooltip text="Tracks removed within 7 days of being added. A 'buyer's remorse' metric for playlist curation." />
                     </h4>
@@ -266,7 +266,7 @@ export default function PlaylistCurationCharts({ data: rawData }: Props) {
 
                 {/* Abandoned Adds */}
                 <div className="bg-[#1a1a1a] rounded-lg p-4">
-                    <h4 className="text-xs text-muted mb-2">
+                    <h4 className="text-xs font-medium text-muted uppercase tracking-wide mb-3">
                         Abandoned Adds
                         <InfoTooltip text="Tracks you added to a playlist but never streamed again afterward. Saved and forgotten." />
                     </h4>
@@ -282,7 +282,7 @@ export default function PlaylistCurationCharts({ data: rawData }: Props) {
             {/* Abandoned Adds examples */}
             {data.abandonedExamples.length > 0 && (
                 <div>
-                    <h4 className="text-xs text-muted mb-2">
+                    <h4 className="text-xs font-medium text-muted uppercase tracking-wide mb-3">
                         Sample Abandoned Tracks
                         <InfoTooltip text="Examples of tracks you added to playlists but never played again." />
                     </h4>
@@ -307,7 +307,7 @@ export default function PlaylistCurationCharts({ data: rawData }: Props) {
             {/* Impulse Add Timing */}
             {data.impulseAddTiming.length > 0 && (
                 <div>
-                    <h4 className="text-xs text-muted mb-2">
+                    <h4 className="text-xs font-medium text-muted uppercase tracking-wide mb-3">
                         Impulse Add Timing
                         <InfoTooltip text="How long after first hearing a track do you add it to a playlist? Shows if you're an instant curator or a slow evaluator." />
                     </h4>

@@ -15,9 +15,9 @@ export default function Card({
 }: CardProps) {
     return (
         <div
-            className={`bg-card-bg border border-card-border rounded-xl p-5 ${className}`}
+            className={`bg-card-bg border border-card-border rounded-xl p-6 ${className}`}
         >
-            <h3 className="text-sm font-semibold text-muted uppercase tracking-wide mb-4 flex items-center">
+            <h3 className="text-sm font-semibold text-foreground uppercase tracking-wide mb-5 flex items-center">
                 {title}
                 {info && <InfoTooltip text={info} />}
             </h3>

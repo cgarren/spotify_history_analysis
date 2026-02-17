@@ -43,7 +43,7 @@ export default function ApiLatencyCharts({ data }: Props) {
             {/* Latency Over Time */}
             {data.latencyOverTime.length > 0 && (
                 <div>
-                    <h4 className="text-xs text-muted mb-2">
+                    <h4 className="text-xs font-medium text-muted uppercase tracking-wide mb-3">
                         Latency Over Time
                         <InfoTooltip text="Weekly average and P95 (worst 5%) API latency. Shows if Spotify is getting faster or slower for you." />
                     </h4>
@@ -102,7 +102,7 @@ export default function ApiLatencyCharts({ data }: Props) {
             {/* Feature Usage Fingerprint */}
             {data.featureFingerprint.length > 0 && (
                 <div>
-                    <h4 className="text-xs text-muted mb-2">
+                    <h4 className="text-xs font-medium text-muted uppercase tracking-wide mb-3">
                         Feature Usage Fingerprint
                         <InfoTooltip text="Top API operations reveal which Spotify features you use most — search, recommendations, playlists, player controls, etc." />
                     </h4>
@@ -151,7 +151,7 @@ export default function ApiLatencyCharts({ data }: Props) {
             {/* API Endpoint Breakdown */}
             {data.endpointBreakdown.length > 0 && (
                 <div>
-                    <h4 className="text-xs text-muted mb-2">
+                    <h4 className="text-xs font-medium text-muted uppercase tracking-wide mb-3">
                         API Endpoint Breakdown
                         <InfoTooltip text="Most-called Spotify Web API endpoints, revealing the raw HTTP requests your apps make." />
                     </h4>
@@ -197,7 +197,7 @@ export default function ApiLatencyCharts({ data }: Props) {
             {/* Error Rate Over Time */}
             {data.errorOverTime.length > 0 && (
                 <div>
-                    <h4 className="text-xs text-muted mb-2">
+                    <h4 className="text-xs font-medium text-muted uppercase tracking-wide mb-3">
                         API Error Rate Over Time
                         <InfoTooltip text="Percentage of HTTP requests that returned error status codes (4xx/5xx) each week." />
                     </h4>

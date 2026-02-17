@@ -47,7 +47,7 @@ export default function BehaviorCharts({
     return (
         <div className="flex flex-col gap-6">
             <div className="text-center">
-                <p className="text-xs text-muted">
+                <p className="text-xs font-medium text-muted uppercase tracking-wide mb-1">
                     Avg Listen Duration
                     <InfoTooltip text="Average time spent on each play event, including partial listens and skips." />
                 </p>
@@ -57,7 +57,7 @@ export default function BehaviorCharts({
             </div>
             <div className="grid grid-cols-2 gap-4">
                 <div>
-                    <h4 className="text-xs text-muted mb-2 text-center">
+                    <h4 className="text-xs font-medium text-muted uppercase tracking-wide mb-3 text-center">
                         Playback Start Reason
                         <InfoTooltip text="What triggered each play: clickrow = you tapped a song, trackdone = autoplay after previous track, fwdbtn = skip forward, etc." />
                     </h4>
@@ -85,7 +85,7 @@ export default function BehaviorCharts({
                     </ResponsiveContainer>
                 </div>
                 <div>
-                    <h4 className="text-xs text-muted mb-2 text-center">
+                    <h4 className="text-xs font-medium text-muted uppercase tracking-wide mb-3 text-center">
                         Playback End Reason
                         <InfoTooltip text="Why each play ended: trackdone = song finished, fwdbtn = skipped, endplay = you stopped, backbtn = went back, etc." />
                     </h4>
@@ -114,7 +114,7 @@ export default function BehaviorCharts({
                 </div>
             </div>
             <div>
-                <h4 className="text-xs text-muted mb-2">
+                <h4 className="text-xs font-medium text-muted uppercase tracking-wide mb-3">
                     Shuffle Usage Over Time
                     <InfoTooltip text="Percentage of plays each month where shuffle mode was active." />
                 </h4>

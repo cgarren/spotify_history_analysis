@@ -80,7 +80,7 @@ export default function PlaylistStreamOverlapCharts({ data }: Props) {
             {/* Most-played playlists */}
             {data.mostPlayedPlaylists.length > 0 && (
                 <div>
-                    <h4 className="text-xs text-muted mb-2">
+                    <h4 className="text-xs font-medium text-muted uppercase tracking-wide mb-3">
                         Most-Played Library/Playlists
                         <InfoTooltip text="Your playlists and Liked Songs library ranked by total streaming hours." />
                     </h4>
@@ -143,7 +143,7 @@ export default function PlaylistStreamOverlapCharts({ data }: Props) {
             {/* Dead playlists */}
             {data.deadPlaylists.length > 0 && (
                 <div>
-                    <h4 className="text-xs text-muted mb-2">
+                    <h4 className="text-xs font-medium text-muted uppercase tracking-wide mb-3">
                         Dead Playlists
                         <InfoTooltip text="Playlists where fewer than 10% of tracks were ever streamed — playlists you created but don't use." />
                     </h4>

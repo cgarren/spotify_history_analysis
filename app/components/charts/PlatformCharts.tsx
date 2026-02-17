@@ -80,7 +80,7 @@ export default function PlatformCharts({
         <div className="flex flex-col gap-6">
             <div className="grid grid-cols-2 gap-4">
                 <div>
-                    <h4 className="text-xs text-muted mb-2 text-center">
+                    <h4 className="text-xs font-medium text-muted uppercase tracking-wide mb-3 text-center">
                         By Platform
                         <InfoTooltip text="Hours listened broken down by device/OS (iOS, macOS, Apple TV, etc.)." />
                     </h4>
@@ -123,7 +123,7 @@ export default function PlatformCharts({
                     </div>
                 </div>
                 <div>
-                    <h4 className="text-xs text-muted mb-2 text-center">
+                    <h4 className="text-xs font-medium text-muted uppercase tracking-wide mb-3 text-center">
                         Online vs Offline
                         <InfoTooltip text="How much of your listening was streamed online vs. played from downloaded/offline content." />
                     </h4>
@@ -163,7 +163,7 @@ export default function PlatformCharts({
             </div>
             {countries.length > 1 && (
                 <div>
-                    <h4 className="text-xs text-muted mb-2">
+                    <h4 className="text-xs font-medium text-muted uppercase tracking-wide mb-3">
                         By Country
                         <InfoTooltip text="Listening hours by country, based on the connection country reported by Spotify." />
                     </h4>

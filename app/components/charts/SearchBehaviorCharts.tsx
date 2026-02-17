@@ -251,7 +251,7 @@ export default function SearchBehaviorCharts({ data }: Props) {
 
             {/* Search activity over time */}
             <div>
-                <h4 className="text-xs text-muted mb-2">
+                <h4 className="text-xs font-medium text-muted uppercase tracking-wide mb-3">
                     Search Activity Over Time
                     <InfoTooltip text="Weekly count of searches that led to a result click." />
                 </h4>
@@ -291,7 +291,7 @@ export default function SearchBehaviorCharts({ data }: Props) {
 
             {/* Top search queries */}
             <div>
-                <h4 className="text-xs text-muted mb-2">
+                <h4 className="text-xs font-medium text-muted uppercase tracking-wide mb-3">
                     Top Search Queries
                     <InfoTooltip text="Your most frequently searched terms that led to clicking a result." />
                 </h4>
@@ -373,7 +373,7 @@ export default function SearchBehaviorCharts({ data }: Props) {
 
             {/* Search hour-of-day */}
             <div>
-                <h4 className="text-xs text-muted mb-2">
+                <h4 className="text-xs font-medium text-muted uppercase tracking-wide mb-3">
                     When You Search
                     <InfoTooltip text="Distribution of your searches by hour of day." />
                 </h4>

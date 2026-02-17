@@ -22,7 +22,7 @@ export default function ContentTypeChart({ data, topPodcasts }: Props) {
     return (
         <div className="flex flex-col gap-6">
             <div>
-                <h4 className="text-xs text-muted mb-2">
+                <h4 className="text-xs font-medium text-muted uppercase tracking-wide mb-3">
                     Music vs Podcasts vs Audiobooks (Monthly)
                     <InfoTooltip text="Monthly hours broken down by content type. Shows how your mix of music, podcasts, and audiobooks changes over time." />
                 </h4>
@@ -69,7 +69,7 @@ export default function ContentTypeChart({ data, topPodcasts }: Props) {
             </div>
             {topPodcasts.length > 0 && (
                 <div>
-                    <h4 className="text-xs text-muted mb-2">
+                    <h4 className="text-xs font-medium text-muted uppercase tracking-wide mb-3">
                         Top Podcasts
                         <InfoTooltip text="Your most-listened podcast shows ranked by total hours." />
                     </h4>

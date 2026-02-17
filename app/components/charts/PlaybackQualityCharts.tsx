@@ -93,7 +93,7 @@ export default function PlaybackQualityCharts({ data }: Props) {
                     }));
                     return (
                         <div>
-                            <h4 className="text-xs text-muted mb-2">
+                            <h4 className="text-xs font-medium text-muted uppercase tracking-wide mb-3">
                                 Audio Quality Profile
                                 <InfoTooltip text="Distribution of audio bitrates across your downloads. Higher bitrate = better quality." />
                             </h4>
@@ -164,7 +164,7 @@ export default function PlaybackQualityCharts({ data }: Props) {
             {/* Error Rate Over Time */}
             {data.errorOverTime.length > 0 && (
                 <div>
-                    <h4 className="text-xs text-muted mb-2">
+                    <h4 className="text-xs font-medium text-muted uppercase tracking-wide mb-3">
                         Playback Error Rate Over Time
                         <InfoTooltip text="Weekly playback errors, split by severity. Fatal errors stop playback entirely." />
                     </h4>
@@ -216,7 +216,7 @@ export default function PlaybackQualityCharts({ data }: Props) {
             {/* Stutter Timeline */}
             {data.stutterTimeline.length > 0 && (
                 <div>
-                    <h4 className="text-xs text-muted mb-2">
+                    <h4 className="text-xs font-medium text-muted uppercase tracking-wide mb-3">
                         Stutter Timeline
                         <InfoTooltip text="Audio stutter events detected per week. Stutters can indicate network issues or device performance problems." />
                     </h4>
@@ -257,7 +257,7 @@ export default function PlaybackQualityCharts({ data }: Props) {
             {/* Download Activity */}
             {data.downloadOverTime.length > 0 && (
                 <div>
-                    <h4 className="text-xs text-muted mb-2">
+                    <h4 className="text-xs font-medium text-muted uppercase tracking-wide mb-3">
                         Download Activity Over Time
                         <InfoTooltip text="Weekly track downloads. Bursts may indicate preparing for offline listening (flights, trips)." />
                     </h4>

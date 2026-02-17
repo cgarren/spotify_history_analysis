@@ -23,7 +23,7 @@ export default function SkipAnalysisCharts({ byArtist, overTime }: Props) {
     return (
         <div className="flex flex-col gap-6">
             <div>
-                <h4 className="text-xs text-muted mb-2">
+                <h4 className="text-xs font-medium text-muted uppercase tracking-wide mb-3">
                     Skip Rate by Top Artists (%)
                     <InfoTooltip text="Percentage of plays that were skipped for each of your most-played artists. Higher = more skips." />
                 </h4>
@@ -61,7 +61,7 @@ export default function SkipAnalysisCharts({ byArtist, overTime }: Props) {
                 </ResponsiveContainer>
             </div>
             <div>
-                <h4 className="text-xs text-muted mb-2">
+                <h4 className="text-xs font-medium text-muted uppercase tracking-wide mb-3">
                     Skip Rate Over Time
                     <InfoTooltip text="Your overall monthly skip rate. A skip is when you advance to the next track before it finishes." />
                 </h4>

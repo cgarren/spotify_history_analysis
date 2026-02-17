@@ -35,17 +35,24 @@ export default function Home() {
     return (
         <main className="min-h-screen px-4 py-8 max-w-[1400px] mx-auto">
             {/* Header */}
-            <div className="mb-8">
-                <h1 className="text-3xl font-bold tracking-tight">
+            <div className="mb-10">
+                <h1 className="text-4xl font-bold tracking-tight text-foreground">
                     Spotify Listening Dashboard
                 </h1>
-                <p className="text-muted text-sm mt-1">
+                <p className="text-muted text-sm mt-2">
                     {overview.dateRange.start} &mdash; {overview.dateRange.end}
                 </p>
             </div>
 
+            {/* Streaming History Section */}
+            <div className="mb-8">
+                <h2 className="text-2xl font-bold tracking-tight text-foreground mb-6">
+                    Listening Overview
+                </h2>
+            </div>
+
             {/* Overview stats row */}
-            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-7 gap-3 mb-8">
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-7 gap-3 mb-10">
                 <StatNumber
                     label="Total Hours"
                     value={overview.totalHours.toLocaleString()}
@@ -208,11 +215,11 @@ export default function Home() {
             {/* ================================================================== */}
             {/* Account Data Sections                                               */}
             {/* ================================================================== */}
-            <div className="mt-12 mb-8">
-                <h2 className="text-2xl font-bold tracking-tight">
+            <div className="mt-16 mb-8 pt-8 border-t border-card-border">
+                <h2 className="text-2xl font-bold tracking-tight text-foreground">
                     Account &amp; Library Insights
                 </h2>
-                <p className="text-muted text-sm mt-1">
+                <p className="text-muted text-sm mt-2">
                     Metrics from your Spotify Account Data — playlists,
                     searches, library, and Wrapped
                 </p>
@@ -240,8 +247,8 @@ export default function Home() {
                 {/* Library Insights */}
                 <Card title="Library Insights">
                     <LibraryHealthCharts data={stats.libraryHealth} />
-                    <hr className="border-[#2a2a2a] my-6" />
-                    <h3 className="text-sm font-semibold text-[#e0e0e0] mb-4">
+                    <hr className="border-card-border my-8" />
+                    <h3 className="text-sm font-semibold text-foreground uppercase tracking-wide mb-5">
                         Explicit Content
                     </h3>
                     <ExplicitContentCharts data={stats.explicitContent} />
@@ -271,11 +278,11 @@ export default function Home() {
             {/* ================================================================== */}
             {/* Technical Log Information Sections                                  */}
             {/* ================================================================== */}
-            <div className="mt-12 mb-8">
-                <h2 className="text-2xl font-bold tracking-tight">
+            <div className="mt-16 mb-8 pt-8 border-t border-card-border">
+                <h2 className="text-2xl font-bold tracking-tight text-foreground">
                     Technical Log Insights
                 </h2>
-                <p className="text-muted text-sm mt-1">
+                <p className="text-muted text-sm mt-2">
                     Metrics from Spotify Technical Log Information — playlist
                     curation, playback quality, social sessions, device
                     telemetry, API latency, and notifications
@@ -338,7 +345,7 @@ export default function Home() {
                 </Card>
             </div>
 
-            <footer className="text-center text-muted text-xs mt-12 mb-4">
+            <footer className="text-center text-muted text-xs mt-16 pt-8 mb-4 border-t border-card-border">
                 Built from Spotify Extended Streaming History, Account Data
                 &amp; Technical Log Information
             </footer>
