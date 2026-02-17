@@ -317,7 +317,10 @@ export default function LibraryHealthCharts({ data }: Props) {
                     <div>
                         <p className="text-xs text-muted">Never Played</p>
                         <p className="text-sm font-semibold text-[#ff6b6b]">
-                            {(data.librarySize - data.utilizedCount).toLocaleString()} tracks
+                            {(
+                                data.librarySize - data.utilizedCount
+                            ).toLocaleString()}{" "}
+                            tracks
                         </p>
                     </div>
                 </div>
@@ -406,7 +409,8 @@ export default function LibraryHealthCharts({ data }: Props) {
             )}
 
             {/* Library concentration */}
-            {(artistConcentration.length > 0 || albumConcentration.length > 0) && (
+            {(artistConcentration.length > 0 ||
+                albumConcentration.length > 0) && (
                 <div>
                     <h4 className="text-xs text-muted mb-2">
                         Top in Your Library
@@ -467,7 +471,8 @@ export default function LibraryHealthCharts({ data }: Props) {
                                                 </p>
                                             )}
                                             <p className="text-accent font-semibold mt-1">
-                                                {row.count.toLocaleString()} saved tracks
+                                                {row.count.toLocaleString()}{" "}
+                                                saved tracks
                                             </p>
                                         </div>
                                     );

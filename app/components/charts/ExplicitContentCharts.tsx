@@ -73,7 +73,10 @@ export default function ExplicitContentCharts({ data }: Props) {
                                     borderRadius: 8,
                                     fontSize: 12,
                                 }}
-                                formatter={(value: number | undefined, name?: string) => [
+                                formatter={(
+                                    value: number | undefined,
+                                    name?: string,
+                                ) => [
                                     `${(value ?? 0).toLocaleString()} tracks`,
                                     name ?? "",
                                 ]}

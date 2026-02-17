@@ -220,7 +220,10 @@ export default function Home() {
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 {/* Wrapped Spotlight - full width */}
-                <Card title={`${stats.wrappedSpotlight.year} Wrapped Spotlight`} className="lg:col-span-2">
+                <Card
+                    title={`${stats.wrappedSpotlight.year} Wrapped Spotlight`}
+                    className="lg:col-span-2"
+                >
                     <WrappedSpotlightCharts data={stats.wrappedSpotlight} />
                 </Card>
 
@@ -238,7 +241,9 @@ export default function Home() {
                 <Card title="Library Insights">
                     <LibraryHealthCharts data={stats.libraryHealth} />
                     <hr className="border-[#2a2a2a] my-6" />
-                    <h3 className="text-sm font-semibold text-[#e0e0e0] mb-4">Explicit Content</h3>
+                    <h3 className="text-sm font-semibold text-[#e0e0e0] mb-4">
+                        Explicit Content
+                    </h3>
                     <ExplicitContentCharts data={stats.explicitContent} />
                 </Card>
 

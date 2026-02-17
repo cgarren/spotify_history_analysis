@@ -80,10 +80,7 @@ export default function SearchBehaviorCharts({ data }: Props) {
         count: number;
     } | null>(null);
 
-    const maxQueryCount = Math.max(
-        ...data.topQueries.map((q) => q.count),
-        1,
-    );
+    const maxQueryCount = Math.max(...data.topQueries.map((q) => q.count), 1);
     const centerWeightedQueries = [...data.topQueries].sort(
         (a, b) => b.count - a.count || a.query.localeCompare(b.query),
     );
@@ -125,7 +122,10 @@ export default function SearchBehaviorCharts({ data }: Props) {
 
         for (let shrinkStep = 0; shrinkStep < 16 && !placed; shrinkStep++) {
             if (shrinkStep > 0) {
-                radius = Math.max(minRadius, baseRadius * (1 - shrinkStep * 0.08));
+                radius = Math.max(
+                    minRadius,
+                    baseRadius * (1 - shrinkStep * 0.08),
+                );
             }
 
             for (let step = 0; step < 12000; step++) {
@@ -164,9 +164,18 @@ export default function SearchBehaviorCharts({ data }: Props) {
         }
 
         if (!placed) {
-            let bestFallback: { x: number; y: number; dist: number } | null = null;
-            for (let gy = SAFE_PADDING + 20; gy <= CLOUD_HEIGHT - SAFE_PADDING - 20; gy += 10) {
-                for (let gx = SAFE_PADDING + 20; gx <= CLOUD_WIDTH - SAFE_PADDING - 20; gx += 10) {
+            let bestFallback: { x: number; y: number; dist: number } | null =
+                null;
+            for (
+                let gy = SAFE_PADDING + 20;
+                gy <= CLOUD_HEIGHT - SAFE_PADDING - 20;
+                gy += 10
+            ) {
+                for (
+                    let gx = SAFE_PADDING + 20;
+                    gx <= CLOUD_WIDTH - SAFE_PADDING - 20;
+                    gx += 10
+                ) {
                     if (!inCluster(gx, gy, radius)) continue;
                     const collides = placedBubbles.some((bubble) => {
                         const dx = bubble.x - gx;
@@ -301,7 +310,8 @@ export default function SearchBehaviorCharts({ data }: Props) {
                                 <g
                                     key={`${bubble.query}-${i}`}
                                     onMouseMove={(e) => {
-                                        const native = e.nativeEvent as MouseEvent;
+                                        const native =
+                                            e.nativeEvent as MouseEvent;
                                         setHoveredQuery({
                                             x: native.offsetX,
                                             y: native.offsetY,
@@ -311,29 +321,32 @@ export default function SearchBehaviorCharts({ data }: Props) {
                                     }}
                                     onMouseLeave={() => setHoveredQuery(null)}
                                 >
-                                <title>{`${bubble.query} • ${bubble.count} searches`}</title>
-                                <circle
-                                    cx={bubble.x}
-                                    cy={bubble.y}
-                                    r={bubble.radius}
-                                    stroke="#1e90ff"
-                                    strokeWidth={2}
-                                    fill={`rgba(30, 144, 255, ${bubble.bgAlpha.toFixed(2)})`}
-                                />
-                                <text
-                                    x={bubble.x}
-                                    y={bubble.y}
-                                    textAnchor="middle"
-                                    dominantBaseline="middle"
-                                    fill="#e0e0e0"
-                                    style={{
-                                        fontSize: `${bubble.fontSize}px`,
-                                        fontWeight: bubble.fontWeight,
-                                        pointerEvents: "none",
-                                    }}
-                                >
-                                    {truncateSmart(bubble.query, bubble.maxChars)}
-                                </text>
+                                    <title>{`${bubble.query} • ${bubble.count} searches`}</title>
+                                    <circle
+                                        cx={bubble.x}
+                                        cy={bubble.y}
+                                        r={bubble.radius}
+                                        stroke="#1e90ff"
+                                        strokeWidth={2}
+                                        fill={`rgba(30, 144, 255, ${bubble.bgAlpha.toFixed(2)})`}
+                                    />
+                                    <text
+                                        x={bubble.x}
+                                        y={bubble.y}
+                                        textAnchor="middle"
+                                        dominantBaseline="middle"
+                                        fill="#e0e0e0"
+                                        style={{
+                                            fontSize: `${bubble.fontSize}px`,
+                                            fontWeight: bubble.fontWeight,
+                                            pointerEvents: "none",
+                                        }}
+                                    >
+                                        {truncateSmart(
+                                            bubble.query,
+                                            bubble.maxChars,
+                                        )}
+                                    </text>
                                 </g>
                             ))}
                         </svg>
