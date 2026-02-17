@@ -20,10 +20,6 @@ interface Props {
     data: SearchBehavior;
 }
 
-function truncate(s: string, max: number) {
-    return s.length > max ? s.slice(0, max - 1) + "…" : s;
-}
-
 function truncateSmart(s: string, max: number) {
     if (s.length <= max) return s;
     const candidate = s.slice(0, max + 1);

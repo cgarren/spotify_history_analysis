@@ -6,7 +6,6 @@ import {
     Pie,
     Cell,
     Tooltip,
-    Legend,
     BarChart,
     Bar,
     XAxis,

@@ -12,7 +12,7 @@ import {
     LineChart,
     Line,
 } from "recharts";
-import { DeviceEvolution, VersionEvent, OsVersionEvent } from "../../types";
+import { DeviceEvolution } from "../../types";
 import InfoTooltip from "../InfoTooltip";
 
 interface Props {
@@ -51,10 +51,6 @@ function buildSegments(
                 ? new Date(sorted[i + 1].date)
                 : globalEnd,
     }));
-}
-
-function formatDate(d: Date): string {
-    return d.toLocaleDateString("en-US", { month: "short", day: "numeric" });
 }
 
 function formatDateFull(d: Date): string {
@@ -122,10 +118,6 @@ function SegmentedTimeline({ lanes }: { lanes: TimelineLane[] }) {
                         </p>
                         <div className="relative h-8 rounded-md overflow-hidden bg-[#1a1a1a] flex">
                             {lane.segments.map((seg, si) => {
-                                const startPct =
-                                    ((seg.startDate.getTime() - globalMin) /
-                                        totalMs) *
-                                    100;
                                 const widthPct =
                                     ((seg.endDate.getTime() -
                                         seg.startDate.getTime()) /

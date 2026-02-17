@@ -7,7 +7,6 @@ import {
     XAxis,
     YAxis,
     Tooltip,
-    CartesianGrid,
 } from "recharts";
 import { PushNotifications } from "../../types";
 import InfoTooltip from "../InfoTooltip";
